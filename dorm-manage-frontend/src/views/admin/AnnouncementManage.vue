@@ -1,0 +1,143 @@
+<template>
+  <div class="page-container">
+    <div class="page-header">
+      <h2 class="page-title">公告管理</h2>
+      <el-button type="primary" @click="openEdit()">新增公告</el-button>
+    </div>
+    <el-table :data="list" stripe>
+      <el-table-column prop="title" label="标题" min-width="200" />
+      <el-table-column prop="status" label="状态" width="100" />
+      <el-table-column prop="publishTime" label="发布时间" width="180" />
+      <el-table-column label="操作" width="180" align="center">
+        <template #default="{ row }">
+          <el-button type="primary" link @click="openEdit(row)">编辑</el-button>
+          <el-button v-if="row.status === '草稿'" type="danger" link @click="remove(row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="pageNum"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="load"
+      />
+    </div>
+    <el-dialog v-model="editVisible" :title="editId ? '编辑公告' : '新增公告'" width="600px" destroy-on-close>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="form.title" placeholder="公告标题" />
+        </el-form-item>
+        <el-form-item label="内容" prop="content">
+          <el-input v-model="form.content" type="textarea" :rows="5" placeholder="公告内容" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择" style="width: 120px">
+            <el-option label="草稿" value="草稿" />
+            <el-option label="已发布" value="已发布" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="置顶">
+          <el-switch v-model="form.isTop" :active-value="1" :inactive-value="0" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editVisible = false">取消</el-button>
+        <el-button type="primary" :loading="saveLoading" @click="save">保存</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+import { adminPage, add, update, remove as removeApi } from '@/api/announcement'
+
+const userStore = useUserStore()
+const list = ref([])
+const pageNum = ref(1)
+const pageSize = 10
+const total = ref(0)
+const editVisible = ref(false)
+const editId = ref(null)
+const formRef = ref(null)
+const saveLoading = ref(false)
+const form = reactive({
+  title: '',
+  content: '',
+  status: '已发布',
+  isTop: 0,
+  publisherId: '',
+  publisherName: '',
+  publishTime: ''
+})
+
+const rules = {
+  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+  content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
+}
+
+async function load() {
+  const res = await adminPage({ pageNum: pageNum.value, pageSize })
+  list.value = res.data?.list || []
+  total.value = res.data?.total || 0
+}
+
+function openEdit(row) {
+  editId.value = row?.id || null
+  if (row) {
+    form.title = row.title
+    form.content = row.content || ''
+    form.status = row.status || '已发布'
+    form.isTop = row.isTop ?? 0
+    form.publisherId = row.publisherId
+    form.publisherName = row.publisherName
+    form.publishTime = row.publishTime
+    form.id = row.id
+  } else {
+    form.title = ''
+    form.content = ''
+    form.status = '已发布'
+    form.isTop = 0
+    form.publisherId = userStore.userId
+    form.publisherName = userStore.displayName
+    form.publishTime = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    delete form.id
+  }
+  editVisible.value = true
+}
+
+async function save() {
+  await formRef.value?.validate().catch(() => {})
+  saveLoading.value = true
+  try {
+    if (editId.value) {
+      await update({ ...form, id: editId.value })
+      ElMessage.success('更新成功')
+    } else {
+      await add(form)
+      ElMessage.success('新增成功')
+    }
+    editVisible.value = false
+    load()
+  } finally {
+    saveLoading.value = false
+  }
+}
+
+async function remove(id) {
+  await ElMessageBox.confirm('确定删除该公告？', '提示', { type: 'warning' })
+  await removeApi(id)
+  ElMessage.success('已删除')
+  load()
+}
+
+onMounted(load)
+</script>
+
+<style scoped>
+.pagination-wrap { margin-top: 20px; display: flex; justify-content: flex-end; }
+</style>

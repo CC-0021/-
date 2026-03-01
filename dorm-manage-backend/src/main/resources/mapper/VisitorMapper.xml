@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.VisitorMapper">
+
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Visitor">
+        <id column="id" property="id"/>
+        <result column="visitor_name" property="visitorName"/>
+        <result column="id_card" property="idCard"/>
+        <result column="phone" property="phone"/>
+        <result column="student_id" property="studentId"/>
+        <result column="room_no" property="roomNo"/>
+        <result column="enter_time" property="enterTime"/>
+        <result column="leave_time" property="leaveTime"/>
+        <result column="registrar_id" property="registrarId"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_visitor (visitor_name, id_card, phone, student_id, room_no, enter_time, leave_time, registrar_id, remark)
+        VALUES (#{visitorName}, #{idCard}, #{phone}, #{studentId}, #{roomNo}, #{enterTime}, #{leaveTime}, #{registrarId}, #{remark})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_visitor WHERE id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_visitor
+        <where>
+            <if test="roomNo != null and roomNo != ''">AND room_no = #{roomNo}</if>
+            <if test="startTime != null">AND enter_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND enter_time &lt;= #{endTime}</if>
+        </where>
+        ORDER BY enter_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_visitor
+        <where>
+            <if test="roomNo != null and roomNo != ''">AND room_no = #{roomNo}</if>
+            <if test="startTime != null">AND enter_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND enter_time &lt;= #{endTime}</if>
+        </where>
+    </select>
+
+    <update id="updateById">
+        UPDATE t_visitor
+        <set>
+            <if test="leaveTime != null">leave_time = #{leaveTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="countByDay" resultType="map">
+        SELECT DATE_FORMAT(enter_time, '%Y-%m-%d') AS dateStr, COUNT(*) AS count
+        FROM t_visitor
+        WHERE enter_time &gt;= #{start} AND enter_time &lt;= #{end}
+        GROUP BY DATE_FORMAT(enter_time, '%Y-%m-%d')
+        ORDER BY dateStr
+    </select>
+
+    <select id="countByBuilding" resultType="map">
+        SELECT room_no AS name, COUNT(*) AS value
+        FROM t_visitor
+        WHERE enter_time &gt;= #{start} AND enter_time &lt;= #{end}
+        GROUP BY room_no
+    </select>
+</mapper>

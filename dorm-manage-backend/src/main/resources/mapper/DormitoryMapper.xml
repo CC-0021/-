@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.DormitoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Dormitory">
+        <id column="id" property="id"/>
+        <result column="building_no" property="buildingNo"/>
+        <result column="floor_no" property="floorNo"/>
+        <result column="room_no" property="roomNo"/>
+        <result column="dorm_type" property="dormType"/>
+        <result column="bed_total" property="bedTotal"/>
+        <result column="bed_available" property="bedAvailable"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="pageWhere">
+        <where>
+            <if test="buildingNo != null and buildingNo != ''">
+                AND building_no = #{buildingNo}
+            </if>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+    </sql>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_dormitory
+        <include refid="pageWhere"/>
+        ORDER BY building_no, floor_no, room_no
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_dormitory
+        <include refid="pageWhere"/>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_dormitory WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_dormitory (building_no, floor_no, room_no, dorm_type, bed_total, bed_available, status)
+        VALUES (#{buildingNo}, #{floorNo}, #{roomNo}, #{dormType}, #{bedTotal}, #{bedAvailable}, #{status})
+    </insert>
+
+    <update id="updateById">
+        UPDATE t_dormitory
+        <set>
+            <if test="buildingNo != null">building_no = #{buildingNo},</if>
+            <if test="floorNo != null">floor_no = #{floorNo},</if>
+            <if test="roomNo != null">room_no = #{roomNo},</if>
+            <if test="dormType != null">dorm_type = #{dormType},</if>
+            <if test="bedTotal != null">bed_total = #{bedTotal},</if>
+            <if test="bedAvailable != null">bed_available = #{bedAvailable},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_dormitory WHERE id = #{id}
+    </delete>
+</mapper>

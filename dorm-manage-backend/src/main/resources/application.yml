@@ -1,0 +1,86 @@
+# 大学生公寓管理系统 - 后端配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  tomcat:
+    threads:
+      max: 500
+      min-spare: 50
+
+spring:
+  application:
+    name: dorm-manage
+  datasource:
+    url: jdbc:mysql://localhost:3306/dorm_manage?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 30000
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+# MyBatis
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.dorm.manage.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# 日志
+logging:
+  level:
+    root: INFO
+    com.dorm.manage: INFO
+    org.springframework.web: INFO
+  file:
+    path: ./logs/dorm_manage
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+      file-name-pattern: ${logging.file.path}/dorm-%d{yyyy-MM-dd}.%i.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 业务配置
+dorm:
+  jwt:
+    secret: dorm-manage-jwt-secret-key-2024-very-long-secret-for-signing
+    expire-hours: 2
+    refresh-threshold-minutes: 30
+  upload:
+    path: ./uploads
+    allowed-extensions: jpg,jpeg,png
+    max-files-repair: 3
+  rate-limit:
+    login-max-per-minute: 20
+    repair-submit-max-per-minute: 20
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:9527,http://localhost:8081
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+  cache:
+    announcement-ttl-hours: 1

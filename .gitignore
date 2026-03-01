@@ -1,0 +1,26 @@
+# 依赖
+node_modules/
+dorm-manage-frontend/node_modules/
+
+# 构建产物
+dorm-manage-frontend/dist/
+dorm-manage-backend/target/
+
+# 日志与上传
+logs/
+*.log
+dorm-manage-backend/uploads/
+
+# 环境与本地配置
+.env
+.env.local
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# 系统
+.DS_Store
+Thumbs.db

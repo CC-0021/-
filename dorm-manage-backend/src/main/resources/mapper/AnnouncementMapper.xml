@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.AnnouncementMapper">
+
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Announcement">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="publisher_id" property="publisherId"/>
+        <result column="publisher_name" property="publisherName"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="status" property="status"/>
+        <result column="is_top" property="isTop"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="pageWhere">
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_announcement
+        <include refid="pageWhere"/>
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_announcement
+        <include refid="pageWhere"/>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_announcement WHERE id = #{id}
+    </select>
+
+    <select id="countTop" resultType="int">
+        SELECT COUNT(*) FROM t_announcement WHERE is_top = 1 AND status = 1
+    </select>
+
+    <select id="selectPublishedRecent" resultMap="BaseResultMap">
+        SELECT * FROM t_announcement
+        WHERE status = 1 AND publish_time >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        ORDER BY is_top DESC, publish_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_announcement (title, content, publisher_id, publisher_name, publish_time, status, is_top)
+        VALUES (#{title}, #{content}, #{publisherId}, #{publisherName}, #{publishTime}, #{status}, #{isTop})
+    </insert>
+
+    <update id="updateById">
+        UPDATE t_announcement
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isTop != null">is_top = #{isTop},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_announcement WHERE id = #{id}
+    </delete>
+</mapper>

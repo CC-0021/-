@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.RepairEvaluationMapper">
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.RepairEvaluation">
+        <id column="id" property="id"/>
+        <result column="repair_id" property="repairId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="score" property="score"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_repair_evaluation (repair_id, student_id, score, content)
+        VALUES (#{repairId}, #{studentId}, #{score}, #{content})
+    </insert>
+    <select id="selectByRepairId" resultMap="BaseResultMap">
+        SELECT * FROM t_repair_evaluation WHERE repair_id = #{repairId}
+    </select>
+    <delete id="deleteByRepairId">
+        DELETE FROM t_repair_evaluation WHERE repair_id = #{repairId}
+    </delete>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.BedMapper">
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Bed">
+        <id column="id" property="id"/>
+        <result column="dormitory_id" property="dormitoryId"/>
+        <result column="bed_no" property="bedNo"/>
+        <result column="status" property="status"/>
+        <result column="student_id" property="studentId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <select id="selectByDormitoryId" resultMap="BaseResultMap">
+        SELECT * FROM t_bed WHERE dormitory_id = #{dormitoryId} ORDER BY bed_no
+    </select>
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_bed WHERE id = #{id}
+    </select>
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_bed
+        <where>
+            <if test="dormitoryId != null">AND dormitory_id = #{dormitoryId}</if>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+        ORDER BY dormitory_id, bed_no
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_bed
+        <where>
+            <if test="dormitoryId != null">AND dormitory_id = #{dormitoryId}</if>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_bed (dormitory_id, bed_no, status) VALUES (#{dormitoryId}, #{bedNo}, #{status})
+    </insert>
+    <update id="updateById">
+        UPDATE t_bed
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="studentId != null">student_id = #{studentId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <update id="updateStatus">
+        UPDATE t_bed SET status = #{status}, student_id = #{studentId} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM t_bed WHERE id = #{id}
+    </delete>
+</mapper>

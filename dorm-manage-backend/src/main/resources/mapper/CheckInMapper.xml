@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.CheckInMapper">
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.CheckIn">
+        <id column="id" property="id"/>
+        <result column="student_id" property="studentId"/>
+        <result column="student_no" property="studentNo"/>
+        <result column="real_name" property="realName"/>
+        <result column="gender" property="gender"/>
+        <result column="college" property="college"/>
+        <result column="major" property="major"/>
+        <result column="class_name" property="className"/>
+        <result column="id_card" property="idCard"/>
+        <result column="phone" property="phone"/>
+        <result column="dormitory_id" property="dormitoryId"/>
+        <result column="room_display" property="roomDisplay"/>
+        <result column="check_in_time" property="checkInTime"/>
+        <result column="status" property="status"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="bed_id" property="bedId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_check_in (student_id, student_no, real_name, gender, college, major, class_name, id_card, phone, dormitory_id, room_display, check_in_time, status)
+        VALUES (#{studentId}, #{studentNo}, #{realName}, #{gender}, #{college}, #{major}, #{className}, #{idCard}, #{phone}, #{dormitoryId}, #{roomDisplay}, #{checkInTime}, #{status})
+    </insert>
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_check_in WHERE id = #{id}
+    </select>
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM t_check_in WHERE student_id = #{studentId} ORDER BY create_time DESC
+    </select>
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_check_in
+        <where>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="college != null and college != ''">AND college = #{college}</if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_check_in
+        <where>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="college != null and college != ''">AND college = #{college}</if>
+        </where>
+    </select>
+    <update id="updateById">
+        UPDATE t_check_in
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="auditUserId != null">audit_user_id = #{auditUserId},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="bedId != null">bed_id = #{bedId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

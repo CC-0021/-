@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.manage.mapper.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Message">
+        <id column="id" property="id"/>
+        <result column="student_id" property="studentId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="phone" property="phone"/>
+        <result column="status" property="status"/>
+        <result column="reply_content" property="replyContent"/>
+        <result column="reply_user_id" property="replyUserId"/>
+        <result column="reply_time" property="replyTime"/>
+        <result column="is_read" property="isRead"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_message (student_id, title, content, phone, status)
+        VALUES (#{studentId}, #{title}, #{content}, #{phone}, #{status})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_message WHERE id = #{id}
+    </select>
+
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM t_message WHERE student_id = #{studentId} ORDER BY create_time DESC
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT * FROM t_message
+        <where>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+        ORDER BY status ASC, create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM t_message
+        <where>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+    </select>
+
+    <update id="updateById">
+        UPDATE t_message
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="replyContent != null">reply_content = #{replyContent},</if>
+            <if test="replyUserId != null">reply_user_id = #{replyUserId},</if>
+            <if test="replyTime != null">reply_time = #{replyTime},</if>
+            <if test="isRead != null">is_read = #{isRead},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_message WHERE id = #{id}
+    </delete>
+</mapper>
