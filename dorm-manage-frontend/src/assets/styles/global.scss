@@ -9,13 +9,23 @@
   --card-radius: 12px;
   --sidebar-width: 220px;
   --header-height: 56px;
+  /* 学生端主题 */
+  --student-primary: #0ea5e9;
+  --student-bg: #f0f9ff;
+  --student-card-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  /* 管理端主题 */
+  --admin-primary: #6366f1;
+  --admin-sidebar-bg: #1e1b4b;
+  --admin-card-border: #e2e8f0;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
 
+/* ========== 通用页面结构（两边共用类名，由父级区分风格） ========== */
 .page-container {
   padding: 24px;
   background: #fff;
@@ -39,4 +49,89 @@ html, body {
   font-size: 18px;
   font-weight: 600;
   color: var(--el-text-color-primary);
+}
+
+/* 分页与表格通用间距 */
+.pagination-wrap {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.page-container .el-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ========== 学生端门户内页样式：更圆角、柔和阴影、浅色边框 ========== */
+.student-portal .main-content .page-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--student-card-shadow);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  padding: 28px;
+}
+
+.student-portal .main-content .page-header {
+  border-bottom-color: rgba(14, 165, 233, 0.15);
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+}
+
+.student-portal .main-content .page-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.student-portal .main-content .el-table {
+  --el-table-border-color: rgba(14, 165, 233, 0.12);
+  --el-table-header-bg-color: #f8fafc;
+}
+
+.student-portal .main-content .el-button--primary {
+  --el-button-bg-color: #0ea5e9;
+  --el-button-border-color: #0ea5e9;
+  --el-button-hover-bg-color: #0284c7;
+  --el-button-hover-border-color: #0284c7;
+}
+
+.student-portal .main-content .el-pagination .el-pager li.is-active {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+
+/* ========== 管理端后台内页样式：偏数据感、清晰边框 ========== */
+.admin-dashboard .main .page-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--admin-card-border);
+  padding: 24px;
+}
+
+.admin-dashboard .main .page-header {
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.admin-dashboard .main .page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e1b4b;
+}
+
+.admin-dashboard .main .el-table {
+  --el-table-header-bg-color: #f8fafc;
+}
+
+.admin-dashboard .main .el-button--primary {
+  --el-button-bg-color: #6366f1;
+  --el-button-border-color: #6366f1;
+  --el-button-hover-bg-color: #4f46e5;
+  --el-button-hover-border-color: #4f46e5;
+}
+
+.admin-dashboard .main .el-pagination .el-pager li.is-active {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
 }

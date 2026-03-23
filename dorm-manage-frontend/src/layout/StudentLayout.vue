@@ -1,79 +1,81 @@
 <template>
-  <el-container class="layout">
-    <el-aside width="220px" class="aside">
-      <div class="logo">
-        <el-icon :size="28"><School /></el-icon>
-        <span>公寓管理</span>
-      </div>
-      <el-menu
-        :default-active="activeMenu"
-        router
-        class="sidebar-menu"
-        background-color="transparent"
-        text-color="#94a3b8"
-        active-text-color="#0ea5e9"
-      >
-        <el-menu-item index="/announcement">
-          <el-icon><Notification /></el-icon>
-          <span>公告</span>
-        </el-menu-item>
-        <el-menu-item index="/repair">
-          <el-icon><Tools /></el-icon>
-          <span>报修记录</span>
-        </el-menu-item>
-        <el-menu-item index="/repair/submit">
-          <el-icon><Plus /></el-icon>
-          <span>提交报修</span>
-        </el-menu-item>
-        <el-menu-item index="/checkin">
-          <el-icon><Calendar /></el-icon>
-          <span>入住登记</span>
-        </el-menu-item>
-        <el-menu-item index="/message">
-          <el-icon><ChatDotRound /></el-icon>
-          <span>留言</span>
-        </el-menu-item>
-        <el-menu-item index="/dorm-application">
-          <el-icon><Document /></el-icon>
-          <span>宿舍申请</span>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
-    <el-container class="main-wrap">
-      <el-header class="header">
-        <div class="header-left">
-          <span class="page-name">{{ pageTitle }}</span>
+  <div class="student-portal">
+    <!-- 顶部欢迎条：学生端专属 -->
+    <header class="portal-topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <span class="brand-icon">
+            <el-icon :size="24"><School /></el-icon>
+          </span>
+          <span class="brand-text">学生公寓服务</span>
         </div>
-        <div class="header-right">
-          <span class="user-name">{{ userStore.displayName }}</span>
-          <el-dropdown trigger="click" @command="handleCommand">
-            <el-button type="primary" link>
+        <div class="topbar-right">
+          <span class="welcome-text">你好，{{ userStore.displayName }}</span>
+          <el-dropdown trigger="click" @command="handleCommand" class="user-dropdown">
+            <el-button class="avatar-btn" circle>
               <el-icon><User /></el-icon>
-              <el-icon class="el-icon--right"><ArrowDown /></el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                <el-dropdown-item command="logout">
+                  <el-icon><SwitchButton /></el-icon>
+                  退出登录
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
         </div>
-      </el-header>
-      <el-main class="main">
-        <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </el-main>
-    </el-container>
-  </el-container>
+      </div>
+    </header>
+
+    <div class="portal-body">
+      <!-- 左侧导航：卡片式、轻量 -->
+      <aside class="portal-sidebar">
+        <nav class="nav-menu">
+          <router-link
+            v-for="item in menuItems"
+            :key="item.path"
+            :to="item.path"
+            class="nav-item"
+            :class="{ active: activeMenu === item.path }"
+          >
+            <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </router-link>
+        </nav>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="portal-main">
+        <div class="main-head">
+          <h1 class="page-name">{{ pageTitle }}</h1>
+        </div>
+        <div class="main-content">
+          <router-view v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+        </div>
+      </main>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { School, Notification, Tools, Plus, Calendar, ChatDotRound, Document, User, ArrowDown } from '@element-plus/icons-vue'
+import {
+  School,
+  Notification,
+  Tools,
+  Plus,
+  Calendar,
+  ChatDotRound,
+  Document,
+  User,
+  SwitchButton
+} from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
@@ -82,6 +84,15 @@ const userStore = useUserStore()
 
 const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => route.meta.title || '首页')
+
+const menuItems = [
+  { path: '/announcement', label: '公告', icon: Notification },
+  { path: '/repair', label: '报修记录', icon: Tools },
+  { path: '/repair/submit', label: '提交报修', icon: Plus },
+  { path: '/checkin', label: '入住登记', icon: Calendar },
+  { path: '/message', label: '留言', icon: ChatDotRound },
+  { path: '/dorm-application', label: '宿舍申请', icon: Document }
+]
 
 function handleCommand(cmd) {
   if (cmd === 'logout') {
@@ -92,68 +103,145 @@ function handleCommand(cmd) {
 </script>
 
 <style scoped>
-.layout {
+.student-portal {
   min-height: 100vh;
-  background: var(--app-bg);
+  background: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 35%, #f0fdfa 100%);
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
 }
-.aside {
-  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+
+/* 顶部欢迎条 */
+.portal-topbar {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #fff;
+  padding: 0 28px;
+  height: 60px;
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-.logo {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: #f8fafc;
-  font-size: 18px;
-  font-weight: 700;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.sidebar-menu {
-  border: none;
-  padding: 12px 0;
-}
-.sidebar-menu .el-menu-item {
-  margin: 4px 12px;
-  border-radius: 8px;
-  height: 44px;
-  line-height: 44px;
-}
-.sidebar-menu .el-menu-item.is-active {
-  background: rgba(14, 165, 233, 0.15) !important;
-  color: #0ea5e9;
-}
-.main-wrap {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.header {
-  height: 56px;
+.topbar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.welcome-text {
+  font-size: 14px;
+  opacity: 0.95;
+}
+.avatar-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+  color: #fff !important;
+}
+.avatar-btn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* 主体：侧栏 + 主区 */
+.portal-body {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 24px;
+  min-height: calc(100vh - 60px);
+}
+
+/* 左侧导航 - 卡片式 */
+.portal-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+.nav-menu {
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+.nav-item:hover {
+  background: #f0f9ff;
+  color: #0ea5e9;
+}
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(14, 165, 233, 0.08) 100%);
+  color: #0284c7;
+  font-weight: 600;
+}
+.nav-icon {
+  font-size: 20px;
+}
+
+/* 主内容 */
+.portal-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.main-head {
+  padding: 0 4px;
 }
 .page-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
-.user-name {
-  margin-right: 8px;
-  font-size: 14px;
-  color: var(--el-text-color-regular);
-}
-.main {
-  padding: 24px;
-  background: var(--app-bg);
+.main-content {
+  flex: 1;
   overflow-x: hidden;
 }
-.fade-enter-active, .fade-leave-active { transition: opacity 0.15s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
