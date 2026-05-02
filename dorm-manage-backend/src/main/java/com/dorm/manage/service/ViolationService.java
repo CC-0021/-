@@ -1,7 +1,9 @@
 package com.dorm.manage.service;
 
 import com.dorm.manage.common.PageResult;
+import com.dorm.manage.common.ResultCode;
 import com.dorm.manage.entity.Violation;
+import com.dorm.manage.exception.BusinessException;
 import com.dorm.manage.mapper.ViolationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class ViolationService {
     /**
      * 分页查询违规记录
      */
-    public PageResult<Violation> page(int pageNum, int pageSize, Long studentId, String roomNo) {
+    public PageResult<Violation> page(int pageNum, int pageSize, String studentId, String roomNo) {
         long total = violationMapper.countPage(studentId, roomNo);
         int offset = (pageNum - 1) * pageSize;
         List<Violation> list = violationMapper.selectPage(studentId, roomNo, offset, pageSize);
@@ -37,9 +39,12 @@ public class ViolationService {
     }
 
     /**
-     * 新增违规记录
+     * 新增违规记录（studentId 直接存储学号）
      */
     public void add(Violation violation) {
+        if (violation.getStudentId() == null) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "学号不能为空");
+        }
         violationMapper.insert(violation);
     }
 
@@ -69,7 +74,7 @@ public class ViolationService {
     /**
      * 学生端：查询自己的违规记录
      */
-    public List<Violation> myList(Long studentId) {
-        return violationMapper.selectByStudentId(studentId);
+    public List<Violation> myList(String username) {
+        return violationMapper.selectByStudentId(username);
     }
 }

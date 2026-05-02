@@ -10,8 +10,8 @@
       
       <!-- 搜索表单 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="学生ID">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学生ID" />
+        <el-form-item label="学号">
+          <el-input v-model="searchForm.studentId" placeholder="请输入学号" />
         </el-form-item>
         <el-form-item label="宿舍号">
           <el-input v-model="searchForm.roomNo" placeholder="请输入宿舍号" />
@@ -21,12 +21,12 @@
           <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-form>
-      
+
       <!-- 数据表格 -->
       <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="studentId" label="学生ID" />
+        <el-table-column prop="studentName" label="学生姓名" />
         <el-table-column prop="roomNo" label="宿舍号" />
         <el-table-column prop="violationType" label="违规类型" />
         <el-table-column prop="violationTime" label="违规时间" />
@@ -64,8 +64,8 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogType === 'add' ? '新增违规记录' : '编辑违规记录'" width="600px">
       <el-form :model="form" label-width="100px">
-        <el-form-item label="学生ID" required>
-          <el-input v-model.number="form.studentId" type="number" placeholder="请输入学生ID" />
+        <el-form-item label="学号" required>
+          <el-input v-model="form.studentId" placeholder="请输入学号" />
         </el-form-item>
         <el-form-item label="宿舍号" required>
           <el-input v-model="form.roomNo" placeholder="请输入宿舍号" />

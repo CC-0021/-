@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @Data
 public class Violation {
     private Long id;
-    private Long studentId;
+    private String studentId;
+    private String studentName;
     private String roomNo;
     private String violationType;
     private LocalDateTime violationTime;

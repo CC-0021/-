@@ -26,7 +26,7 @@ public class ViolationController {
     public Result<PageResult<Violation>> adminPage(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) String studentId,
             @RequestParam(required = false) String roomNo) {
         return Result.ok(violationService.page(pageNum, pageSize, studentId, roomNo));
     }
@@ -67,7 +67,7 @@ public class ViolationController {
 
     /** 学生端：查看自己的违规记录 */
     @GetMapping("/my/list")
-    public Result<List<Violation>> myList(@RequestAttribute Long userId) {
-        return Result.ok(violationService.myList(userId));
+    public Result<List<Violation>> myList(@RequestAttribute String username) {
+        return Result.ok(violationService.myList(username));
     }
 }

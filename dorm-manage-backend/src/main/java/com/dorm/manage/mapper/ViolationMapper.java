@@ -18,14 +18,14 @@ public interface ViolationMapper {
 
     Violation selectById(Long id);
 
-    List<Violation> selectPage(@Param("studentId") Long studentId,
+    List<Violation> selectPage(@Param("studentId") String studentId,
                                @Param("roomNo") String roomNo,
                                @Param("offset") long offset,
                                @Param("limit") int limit);
 
-    long countPage(@Param("studentId") Long studentId, @Param("roomNo") String roomNo);
+    long countPage(@Param("studentId") String studentId, @Param("roomNo") String roomNo);
 
-    List<Violation> selectByStudentId(@Param("studentId") Long studentId);
+    List<Violation> selectByStudentId(@Param("studentId") String studentId);
 
     int updateById(Violation violation);
 

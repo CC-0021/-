@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.dorm.manage.entity.Violation">
         <id column="id" property="id"/>
         <result column="student_id" property="studentId"/>
+        <result column="student_name" property="studentName"/>
         <result column="room_no" property="roomNo"/>
         <result column="violation_type" property="violationType"/>
         <result column="violation_time" property="violationTime"/>
@@ -19,26 +20,35 @@
         VALUES (#{studentId}, #{roomNo}, #{violationType}, #{violationTime}, #{description}, #{evidence}, #{handleResult}, #{handlerId})
     </insert>
     <select id="selectById" resultMap="BaseResultMap">
-        SELECT * FROM t_violation WHERE id = #{id}
+        SELECT v.*, u.real_name as student_name
+        FROM t_violation v
+        LEFT JOIN t_user u ON v.student_id = u.username
+        WHERE v.id = #{id}
     </select>
     <select id="selectPage" resultMap="BaseResultMap">
-        SELECT * FROM t_violation
+        SELECT v.*, u.real_name as student_name
+        FROM t_violation v
+        LEFT JOIN t_user u ON v.student_id = u.username
         <where>
-            <if test="studentId != null">AND student_id = #{studentId}</if>
-            <if test="roomNo != null and roomNo != ''">AND room_no = #{roomNo}</if>
+            <if test="studentId != null and studentId != ''">AND v.student_id = #{studentId}</if>
+            <if test="roomNo != null and roomNo != ''">AND v.room_no = #{roomNo}</if>
         </where>
-        ORDER BY violation_time DESC
+        ORDER BY v.violation_time DESC
         LIMIT #{offset}, #{limit}
     </select>
     <select id="countPage" resultType="long">
-        SELECT COUNT(*) FROM t_violation
+        SELECT COUNT(*) FROM t_violation v
         <where>
-            <if test="studentId != null">AND student_id = #{studentId}</if>
-            <if test="roomNo != null and roomNo != ''">AND room_no = #{roomNo}</if>
+            <if test="studentId != null and studentId != ''">AND v.student_id = #{studentId}</if>
+            <if test="roomNo != null and roomNo != ''">AND v.room_no = #{roomNo}</if>
         </where>
     </select>
     <select id="selectByStudentId" resultMap="BaseResultMap">
-        SELECT * FROM t_violation WHERE student_id = #{studentId} ORDER BY violation_time DESC
+        SELECT v.*, u.real_name as student_name
+        FROM t_violation v
+        LEFT JOIN t_user u ON v.student_id = u.username
+        WHERE v.student_id = #{studentId}
+        ORDER BY v.violation_time DESC
     </select>
     <update id="updateById">
         UPDATE t_violation
