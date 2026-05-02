@@ -18,7 +18,7 @@
     <sql id="pageWhere">
         <where>
             <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
-            <if test="department != null and department != ''">AND department = #{department}</if>
+            <if test="department != null and department != ''">AND department LIKE CONCAT('%', #{department}, '%')</if>
             <if test="status != null">AND status = #{status}</if>
         </where>
     </sql>

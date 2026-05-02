@@ -22,10 +22,10 @@ public class DormitoryService {
     /**
      * 分页查询宿舍列表
      */
-    public PageResult<Dormitory> page(int pageNum, int pageSize, String buildingNo, Integer status) {
-        long total = dormitoryMapper.countPage(buildingNo, status);
+    public PageResult<Dormitory> page(int pageNum, int pageSize, String buildingNo, String roomNo, Integer status) {
+        long total = dormitoryMapper.countPage(buildingNo, roomNo, status);
         int offset = (pageNum - 1) * pageSize;
-        List<Dormitory> list = dormitoryMapper.selectPage(buildingNo, status, offset, pageSize);
+        List<Dormitory> list = dormitoryMapper.selectPage(buildingNo, roomNo, status, offset, pageSize);
         return new PageResult<>(total, list);
     }
 

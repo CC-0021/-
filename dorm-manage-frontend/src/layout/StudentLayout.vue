@@ -74,7 +74,8 @@ import {
   ChatDotRound,
   Document,
   User,
-  SwitchButton
+  SwitchButton,
+  Warning
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
@@ -91,7 +92,8 @@ const menuItems = [
   { path: '/repair/submit', label: '提交报修', icon: Plus },
   { path: '/checkin', label: '入住登记', icon: Calendar },
   { path: '/message', label: '留言', icon: ChatDotRound },
-  { path: '/dorm-application', label: '宿舍申请', icon: Document }
+  { path: '/dorm-application', label: '宿舍申请', icon: Document },
+  { path: '/violation', label: '违规记录', icon: Warning }
 ]
 
 function handleCommand(cmd) {

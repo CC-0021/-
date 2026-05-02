@@ -20,6 +20,7 @@
         SELECT * FROM t_bed
         <where>
             <if test="dormitoryId != null">AND dormitory_id = #{dormitoryId}</if>
+            <if test="bedNo != null and bedNo != ''">AND bed_no LIKE CONCAT('%', #{bedNo}, '%')</if>
             <if test="status != null">AND status = #{status}</if>
         </where>
         ORDER BY dormitory_id, bed_no
@@ -29,15 +30,18 @@
         SELECT COUNT(*) FROM t_bed
         <where>
             <if test="dormitoryId != null">AND dormitory_id = #{dormitoryId}</if>
+            <if test="bedNo != null and bedNo != ''">AND bed_no LIKE CONCAT('%', #{bedNo}, '%')</if>
             <if test="status != null">AND status = #{status}</if>
         </where>
     </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_bed (dormitory_id, bed_no, status) VALUES (#{dormitoryId}, #{bedNo}, #{status})
+        INSERT INTO t_bed (dormitory_id, bed_no, status, student_id) VALUES (#{dormitoryId}, #{bedNo}, #{status}, #{studentId})
     </insert>
     <update id="updateById">
         UPDATE t_bed
         <set>
+            <if test="dormitoryId != null">dormitory_id = #{dormitoryId},</if>
+            <if test="bedNo != null">bed_no = #{bedNo},</if>
             <if test="status != null">status = #{status},</if>
             <if test="studentId != null">student_id = #{studentId},</if>
         </set>

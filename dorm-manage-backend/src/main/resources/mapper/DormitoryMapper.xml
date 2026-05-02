@@ -18,7 +18,10 @@
     <sql id="pageWhere">
         <where>
             <if test="buildingNo != null and buildingNo != ''">
-                AND building_no = #{buildingNo}
+                AND building_no LIKE CONCAT('%', #{buildingNo}, '%')
+            </if>
+            <if test="roomNo != null and roomNo != ''">
+                AND room_no LIKE CONCAT('%', #{roomNo}, '%')
             </if>
             <if test="status != null">AND status = #{status}</if>
         </where>

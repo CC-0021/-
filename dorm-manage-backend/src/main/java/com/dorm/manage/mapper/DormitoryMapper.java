@@ -15,11 +15,12 @@ import java.util.List;
 public interface DormitoryMapper {
 
     List<Dormitory> selectPage(@Param("buildingNo") String buildingNo,
+                               @Param("roomNo") String roomNo,
                                @Param("status") Integer status,
                                @Param("offset") long offset,
                                @Param("limit") int limit);
 
-    long countPage(@Param("buildingNo") String buildingNo, @Param("status") Integer status);
+    long countPage(@Param("buildingNo") String buildingNo, @Param("roomNo") String roomNo, @Param("status") Integer status);
 
     Dormitory selectById(Long id);
 

@@ -13,5 +13,7 @@ export default {
   // 删除
   delete: (id) => request.delete(`/violation/admin/delete/${id}`),
   // 批量删除
-  batchDelete: (ids) => request.delete('/violation/admin/batch-delete', { data: ids })
+  batchDelete: (ids) => request.delete('/violation/admin/batch-delete', { data: ids }),
+  // 学生端：我的违规记录
+  myList: () => request.get('/violation/my/list')
 }

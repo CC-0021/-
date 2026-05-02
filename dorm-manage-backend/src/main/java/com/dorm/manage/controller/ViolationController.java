@@ -64,4 +64,10 @@ public class ViolationController {
         violationService.batchDelete(ids);
         return Result.ok();
     }
+
+    /** 学生端：查看自己的违规记录 */
+    @GetMapping("/my/list")
+    public Result<List<Violation>> myList(@RequestAttribute Long userId) {
+        return Result.ok(violationService.myList(userId));
+    }
 }

@@ -27,8 +27,9 @@ public class BedController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) Long dormitoryId,
+            @RequestParam(required = false) String bedNo,
             @RequestParam(required = false) Integer status) {
-        return Result.ok(bedService.page(pageNum, pageSize, dormitoryId, status));
+        return Result.ok(bedService.page(pageNum, pageSize, dormitoryId, bedNo, status));
     }
 
     /** 管理端：根据宿舍ID获取床位列表 */

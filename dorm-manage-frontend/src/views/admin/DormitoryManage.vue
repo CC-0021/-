@@ -13,6 +13,9 @@
         <el-form-item label="楼栋号">
           <el-input v-model="searchForm.buildingNo" placeholder="请输入楼栋号" />
         </el-form-item>
+        <el-form-item label="房间号">
+          <el-input v-model="searchForm.roomNo" placeholder="请输入房间号" />
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态">
             <el-option label="正常" value="1" />
@@ -28,7 +31,7 @@
       <!-- 数据表格 -->
       <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="ID" width="80" />
+<!--        <el-table-column prop="id" label="ID" width="80" />-->
         <el-table-column prop="buildingNo" label="楼栋号" />
         <el-table-column prop="floorNo" label="楼层" />
         <el-table-column prop="roomNo" label="房间号" />
@@ -112,6 +115,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import dormitoryApi from '@/api/dormitory'
 
 // 表格数据
@@ -123,6 +127,7 @@ const pageSize = ref(10)
 // 搜索表单
 const searchForm = reactive({
   buildingNo: '',
+  roomNo: '',
   status: ''
 })
 
@@ -149,6 +154,7 @@ const getList = () => {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
     buildingNo: searchForm.buildingNo,
+    roomNo: searchForm.roomNo,
     status: searchForm.status
   }).then(res => {
     tableData.value = res.data.list
@@ -159,6 +165,7 @@ const getList = () => {
 // 重置表单
 const resetForm = () => {
   searchForm.buildingNo = ''
+  searchForm.roomNo = ''
   searchForm.status = ''
   getList()
 }

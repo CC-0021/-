@@ -13,6 +13,9 @@
         <el-form-item label="宿舍ID">
           <el-input v-model="searchForm.dormitoryId" placeholder="请输入宿舍ID" />
         </el-form-item>
+        <el-form-item label="床位号">
+          <el-input v-model="searchForm.bedNo" placeholder="请输入床位号" />
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态">
             <el-option label="空闲" value="0" />
@@ -29,7 +32,7 @@
       <!-- 数据表格 -->
       <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="ID" width="80" />
+<!--        <el-table-column prop="id" label="ID" width="80" />-->
         <el-table-column prop="dormitoryId" label="宿舍ID" />
         <el-table-column prop="bedNo" label="床位号" />
         <el-table-column prop="status" label="状态" width="100">
@@ -99,6 +102,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import bedApi from '@/api/bed'
 
 // 表格数据
@@ -110,6 +114,7 @@ const pageSize = ref(10)
 // 搜索表单
 const searchForm = reactive({
   dormitoryId: '',
+  bedNo: '',
   status: ''
 })
 
@@ -153,6 +158,7 @@ const getList = () => {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
     dormitoryId: searchForm.dormitoryId,
+    bedNo: searchForm.bedNo,
     status: searchForm.status
   }).then(res => {
     tableData.value = res.data.list
@@ -163,6 +169,7 @@ const getList = () => {
 // 重置表单
 const resetForm = () => {
   searchForm.dormitoryId = ''
+  searchForm.bedNo = ''
   searchForm.status = ''
   getList()
 }

@@ -25,6 +25,8 @@ public interface ViolationMapper {
 
     long countPage(@Param("studentId") Long studentId, @Param("roomNo") String roomNo);
 
+    List<Violation> selectByStudentId(@Param("studentId") Long studentId);
+
     int updateById(Violation violation);
 
     int deleteById(Long id);

@@ -27,8 +27,9 @@ public class DormitoryController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String buildingNo,
+            @RequestParam(required = false) String roomNo,
             @RequestParam(required = false) Integer status) {
-        return Result.ok(dormitoryService.page(pageNum, pageSize, buildingNo, status));
+        return Result.ok(dormitoryService.page(pageNum, pageSize, buildingNo, roomNo, status));
     }
 
     /** 管理端：详情 */

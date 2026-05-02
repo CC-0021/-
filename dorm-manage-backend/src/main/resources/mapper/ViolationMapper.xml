@@ -37,6 +37,9 @@
             <if test="roomNo != null and roomNo != ''">AND room_no = #{roomNo}</if>
         </where>
     </select>
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM t_violation WHERE student_id = #{studentId} ORDER BY violation_time DESC
+    </select>
     <update id="updateById">
         UPDATE t_violation
         <set>

@@ -31,7 +31,7 @@
       <!-- 数据表格 -->
       <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="ID" width="80" />
+<!--        <el-table-column prop="id" label="ID" width="80" />-->
         <el-table-column prop="name" label="姓名" />
         <el-table-column prop="gender" label="性别" width="80">
           <template #default="scope">
@@ -119,6 +119,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import employeeApi from '@/api/employee'
 
 // 表格数据

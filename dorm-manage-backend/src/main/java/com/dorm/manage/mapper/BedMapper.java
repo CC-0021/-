@@ -19,11 +19,12 @@ public interface BedMapper {
     Bed selectById(Long id);
 
     List<Bed> selectPage(@Param("dormitoryId") Long dormitoryId,
+                         @Param("bedNo") String bedNo,
                          @Param("status") Integer status,
                          @Param("offset") long offset,
                          @Param("limit") int limit);
 
-    long countPage(@Param("dormitoryId") Long dormitoryId, @Param("status") Integer status);
+    long countPage(@Param("dormitoryId") Long dormitoryId, @Param("bedNo") String bedNo, @Param("status") Integer status);
 
     int insert(Bed bed);
 

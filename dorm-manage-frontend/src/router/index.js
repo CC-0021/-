@@ -27,7 +27,8 @@ const routes = [
       { path: 'repair/detail/:id', name: 'RepairDetail', component: () => import('@/views/student/RepairDetail.vue'), meta: { title: '报修详情' } },
       { path: 'checkin', name: 'CheckIn', component: () => import('@/views/student/CheckIn.vue'), meta: { title: '入住登记' } },
       { path: 'message', name: 'Message', component: () => import('@/views/student/Message.vue'), meta: { title: '留言' } },
-      { path: 'dorm-application', name: 'DormApplication', component: () => import('@/views/student/DormApplication.vue'), meta: { title: '宿舍申请' } }
+      { path: 'dorm-application', name: 'DormApplication', component: () => import('@/views/student/DormApplication.vue'), meta: { title: '宿舍申请' } },
+      { path: 'violation', name: 'Violation', component: () => import('@/views/student/ViolationList.vue'), meta: { title: '违规记录' } }
     ]
   },
   {

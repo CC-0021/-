@@ -65,4 +65,11 @@ public class ViolationService {
             violationMapper.deleteById(id);
         }
     }
+
+    /**
+     * 学生端：查询自己的违规记录
+     */
+    public List<Violation> myList(Long studentId) {
+        return violationMapper.selectByStudentId(studentId);
+    }
 }

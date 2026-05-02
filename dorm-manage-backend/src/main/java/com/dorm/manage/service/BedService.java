@@ -22,10 +22,10 @@ public class BedService {
     /**
      * 分页查询床位列表
      */
-    public PageResult<Bed> page(int pageNum, int pageSize, Long dormitoryId, Integer status) {
-        long total = bedMapper.countPage(dormitoryId, status);
+    public PageResult<Bed> page(int pageNum, int pageSize, Long dormitoryId, String bedNo, Integer status) {
+        long total = bedMapper.countPage(dormitoryId, bedNo, status);
         int offset = (pageNum - 1) * pageSize;
-        List<Bed> list = bedMapper.selectPage(dormitoryId, status, offset, pageSize);
+        List<Bed> list = bedMapper.selectPage(dormitoryId, bedNo, status, offset, pageSize);
         return new PageResult<>(total, list);
     }
 
