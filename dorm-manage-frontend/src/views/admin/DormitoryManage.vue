@@ -85,16 +85,16 @@
           <el-input v-model="form.roomNo" placeholder="请输入房间号" />
         </el-form-item>
         <el-form-item label="宿舍类型">
-          <el-select v-model="form.dormType" placeholder="请选择宿舍类型">
+          <el-select v-model="form.dormType" placeholder="请选择宿舍类型" @change="handleDormTypeChange">
             <el-option label="4人间" value="4人间" />
             <el-option label="6人间" value="6人间" />
           </el-select>
         </el-form-item>
         <el-form-item label="床位总数" required>
-          <el-input v-model.number="form.bedTotal" type="number" placeholder="请输入床位总数" />
+          <el-input v-model.number="form.bedTotal" type="number" placeholder="请输入床位总数" disabled />
         </el-form-item>
         <el-form-item label="空闲床位" required>
-          <el-input v-model.number="form.bedAvailable" type="number" placeholder="请输入空闲床位数" />
+          <el-input v-model.number="form.bedAvailable" type="number" placeholder="请输入空闲床位数" disabled />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="form.status" placeholder="请选择状态">
@@ -200,6 +200,17 @@ const openAddDialog = () => {
     status: 1
   })
   dialogVisible.value = true
+}
+
+// 宿舍类型变更处理
+const handleDormTypeChange = (val) => {
+  if (val === '6人间') {
+    form.bedTotal = 6
+    form.bedAvailable = 6
+  } else {
+    form.bedTotal = 4
+    form.bedAvailable = 4
+  }
 }
 
 // 打开编辑对话框

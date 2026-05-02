@@ -37,9 +37,16 @@ public class DormitoryService {
     }
 
     /**
-     * 新增宿舍
+     * 新增宿舍：根据宿舍类型自动设置床位总数和空闲床位
      */
     public void add(Dormitory dormitory) {
+        if ("6人间".equals(dormitory.getDormType())) {
+            dormitory.setBedTotal(6);
+            dormitory.setBedAvailable(6);
+        } else {
+            dormitory.setBedTotal(4);
+            dormitory.setBedAvailable(4);
+        }
         dormitoryMapper.insert(dormitory);
     }
 
