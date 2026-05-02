@@ -43,8 +43,14 @@ public class RepairService {
 
     @Transactional(rollbackFor = Exception.class)
     public void submit(Repair repair, Long studentId, String clientIp) {
-        if (!redisUtil.tryIncrementRateLimit("repair:" + clientIp, repairSubmitMaxPerMinute)) {
-            throw new BusinessException("提交过于频繁，请稍后再试");
+        try {
+            if (!redisUtil.tryIncrementRateLimit("repair:" + clientIp, repairSubmitMaxPerMinute)) {
+                throw new BusinessException("提交过于频繁，请稍后再试");
+            }
+        } catch (Exception e) {
+            // Redis 不可用时，跳过限流检查，确保业务正常运行
+            // 记录日志
+            System.out.println("Redis 限流检查失败，跳过限流: " + e.getMessage());
         }
         repair.setStudentId(studentId);
         repair.setRepairNo(generateRepairNo());

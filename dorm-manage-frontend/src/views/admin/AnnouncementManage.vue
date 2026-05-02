@@ -6,14 +6,18 @@
     </div>
     <el-table :data="list" stripe>
       <el-table-column prop="title" label="标题" min-width="200" />
-      <el-table-column prop="status" label="状态" width="100" />
-      <el-table-column prop="publishTime" label="发布时间" width="180" />
-      <el-table-column label="操作" width="180" align="center">
-        <template #default="{ row }">
-          <el-button type="primary" link @click="openEdit(row)">编辑</el-button>
-          <el-button v-if="row.status === '草稿'" type="danger" link @click="remove(row.id)">删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            {{ statusMap[row.status] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="publishTime" label="发布时间" width="180" />
+        <el-table-column label="操作" width="180" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link @click="openEdit(row)">编辑</el-button>
+            <el-button v-if="row.status === 0" type="danger" link @click="remove(row.id)">删除</el-button>
+          </template>
+        </el-table-column>
     </el-table>
     <div class="pagination-wrap">
       <el-pagination
@@ -34,8 +38,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" placeholder="请选择" style="width: 120px">
-            <el-option label="草稿" value="草稿" />
-            <el-option label="已发布" value="已发布" />
+            <el-option label="草稿" value="0" />
+            <el-option label="已发布" value="1" />
           </el-select>
         </el-form-item>
         <el-form-item label="置顶">
@@ -51,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { adminPage, add, update, remove as removeApi } from '@/api/announcement'
@@ -68,12 +72,19 @@ const saveLoading = ref(false)
 const form = reactive({
   title: '',
   content: '',
-  status: '已发布',
+  status: '1',
   isTop: 0,
   publisherId: '',
   publisherName: '',
   publishTime: ''
 })
+
+// 状态映射
+const statusMap = {
+  0: '草稿',
+  1: '已发布',
+  2: '已撤回'
+}
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
@@ -91,7 +102,7 @@ function openEdit(row) {
   if (row) {
     form.title = row.title
     form.content = row.content || ''
-    form.status = row.status || '已发布'
+    form.status = row.status?.toString() || '1'
     form.isTop = row.isTop ?? 0
     form.publisherId = row.publisherId
     form.publisherName = row.publisherName
@@ -100,7 +111,7 @@ function openEdit(row) {
   } else {
     form.title = ''
     form.content = ''
-    form.status = '已发布'
+    form.status = '1'
     form.isTop = 0
     form.publisherId = userStore.userId
     form.publisherName = userStore.displayName
@@ -114,11 +125,17 @@ async function save() {
   await formRef.value?.validate().catch(() => {})
   saveLoading.value = true
   try {
+    // 将 status 转换为数字
+    const formData = {
+      ...form,
+      status: parseInt(form.status),
+      id: editId.value
+    }
     if (editId.value) {
-      await update({ ...form, id: editId.value })
+      await update(formData)
       ElMessage.success('更新成功')
     } else {
-      await add(form)
+      await add(formData)
       ElMessage.success('新增成功')
     }
     editVisible.value = false

@@ -40,7 +40,12 @@ const routes = [
       { path: 'repair', name: 'AdminRepair', component: () => import('@/views/admin/RepairManage.vue'), meta: { title: '报修管理' } },
       { path: 'checkin', name: 'AdminCheckIn', component: () => import('@/views/admin/CheckInManage.vue'), meta: { title: '入住审核' } },
       { path: 'message', name: 'AdminMessage', component: () => import('@/views/admin/MessageManage.vue'), meta: { title: '留言回复' } },
-      { path: 'dorm-application', name: 'AdminDormApp', component: () => import('@/views/admin/DormApplicationManage.vue'), meta: { title: '宿舍申请审核' } }
+      { path: 'dorm-application', name: 'AdminDormApp', component: () => import('@/views/admin/DormApplicationManage.vue'), meta: { title: '宿舍申请审核' } },
+      { path: 'dormitory', name: 'AdminDormitory', component: () => import('@/views/admin/DormitoryManage.vue'), meta: { title: '宿舍管理' } },
+      { path: 'bed', name: 'AdminBed', component: () => import('@/views/admin/BedManage.vue'), meta: { title: '床位管理' } },
+      { path: 'employee', name: 'AdminEmployee', component: () => import('@/views/admin/EmployeeManage.vue'), meta: { title: '员工信息管理' } },
+      { path: 'violation', name: 'AdminViolation', component: () => import('@/views/admin/ViolationManage.vue'), meta: { title: '宿舍违规管理' } },
+      { path: 'visitor', name: 'AdminVisitor', component: () => import('@/views/admin/VisitorManage.vue'), meta: { title: '来访登记' } }
     ]
   }
 ]

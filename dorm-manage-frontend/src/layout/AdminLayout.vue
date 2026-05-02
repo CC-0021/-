@@ -38,13 +38,28 @@
             <el-icon><Document /></el-icon>
             <span>宿舍申请</span>
           </el-menu-item>
+          <el-menu-item index="/admin/dormitory">
+            <el-icon><OfficeBuilding /></el-icon>
+            <span>宿舍管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/bed">
+            <el-icon><FirstAidKit /></el-icon>
+            <span>床位管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/employee">
+            <el-icon><UserFilled /></el-icon>
+            <span>员工信息管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/violation">
+            <el-icon><Warning /></el-icon>
+            <span>宿舍违规管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/visitor">
+            <el-icon><Tickets /></el-icon>
+            <span>来访登记</span>
+          </el-menu-item>
         </el-menu>
-        <div class="aside-footer">
-          <el-button type="primary" link class="back-student" @click="router.push('/announcement')">
-            <el-icon><Back /></el-icon>
-            返回学生端
-          </el-button>
-        </div>
+
       </el-aside>
 
       <el-container class="main-wrap">
@@ -98,7 +113,11 @@ import {
   Document,
   User,
   ArrowDown,
-  Back
+  OfficeBuilding,
+  FirstAidKit,
+  UserFilled,
+  Warning,
+  Tickets
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
@@ -183,21 +202,7 @@ function handleCommand(cmd) {
   color: #e0e7ff !important;
   font-weight: 600;
 }
-.aside-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.back-student {
-  color: #a5b4fc !important;
-  font-size: 13px;
-}
-.back-student:hover {
-  color: #e0e7ff !important;
-}
+
 
 /* 顶栏 */
 .main-wrap {

@@ -1,5 +1,6 @@
 package com.dorm.manage.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +23,14 @@ public class Announcement {
     private String content;
     private Long publisherId;
     private String publisherName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime publishTime;
     /** 状态：0草稿 1已发布 2已撤回 */
     private Integer status;
     /** 是否置顶：0否 1是 */
     private Integer isTop;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime updateTime;
 }

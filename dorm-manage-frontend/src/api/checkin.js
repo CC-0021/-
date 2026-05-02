@@ -11,3 +11,7 @@ export function submit(data) {
 export function adminPage(params) {
   return request({ url: '/checkin/admin/page', method: 'get', params })
 }
+
+export function audit(data) {
+  return request({ url: '/checkin/admin/audit', method: 'put', data })
+}
