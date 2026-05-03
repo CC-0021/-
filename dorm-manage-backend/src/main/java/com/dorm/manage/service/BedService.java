@@ -44,6 +44,13 @@ public class BedService {
     }
 
     /**
+     * 根据学生ID获取床位信息
+     */
+    public Bed getByStudentId(String studentId) {
+        return bedMapper.selectByStudentId(studentId);
+    }
+
+    /**
      * 新增床位
      */
     public void add(Bed bed) {
@@ -60,7 +67,7 @@ public class BedService {
     /**
      * 更新床位状态
      */
-    public void updateStatus(Long id, Integer status, Long studentId) {
+    public void updateStatus(Long id, Integer status, String studentId) {
         bedMapper.updateStatus(id, status, studentId);
     }
 

@@ -24,6 +24,8 @@ public interface DormitoryMapper {
 
     Dormitory selectById(Long id);
 
+    Dormitory selectByRoomNo(@Param("roomNo") Long roomNo);
+
     int insert(Dormitory dormitory);
 
     int updateById(Dormitory dormitory);

@@ -37,6 +37,13 @@ public class DormitoryService {
     }
 
     /**
+     * 根据房间号获取宿舍信息
+     */
+    public Dormitory getByRoomNo(Long roomNo) {
+        return dormitoryMapper.selectByRoomNo(roomNo);
+    }
+
+    /**
      * 新增宿舍：根据宿舍类型自动设置床位总数和空闲床位
      */
     public void add(Dormitory dormitory) {

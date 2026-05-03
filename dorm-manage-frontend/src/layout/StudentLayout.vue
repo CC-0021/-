@@ -75,7 +75,8 @@ import {
   Document,
   User,
   SwitchButton,
-  Warning
+  Warning,
+  House
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
@@ -91,6 +92,7 @@ const menuItems = [
   { path: '/repair', label: '报修记录', icon: Tools },
   { path: '/repair/submit', label: '提交报修', icon: Plus },
   { path: '/checkin', label: '入住登记', icon: Calendar },
+  { path: '/my-dormitory', label: '我的宿舍', icon: House },
   { path: '/message', label: '留言', icon: ChatDotRound },
   { path: '/dorm-application', label: '宿舍申请', icon: Document },
   { path: '/violation', label: '违规记录', icon: Warning }

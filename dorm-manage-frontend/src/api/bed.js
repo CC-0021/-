@@ -17,5 +17,7 @@ export default {
   // 删除
   delete: (id) => request.delete(`/bed/admin/delete/${id}`),
   // 批量删除
-  batchDelete: (ids) => request.delete('/bed/admin/batch-delete', { data: ids })
+  batchDelete: (ids) => request.delete('/bed/admin/batch-delete', { data: ids }),
+  // 学生端：获取我的宿舍信息
+  myDormitory: () => request.get('/bed/my/dormitory')
 }

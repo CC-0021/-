@@ -16,7 +16,7 @@ public class Bed {
     private String bedNo;
     /** 状态：0空闲 1已入住 2维修中 */
     private Integer status;
-    private Long studentId;
+    private String studentId;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     /** 关联宿舍信息 */

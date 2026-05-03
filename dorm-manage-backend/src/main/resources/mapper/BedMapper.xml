@@ -53,4 +53,11 @@
     <delete id="deleteById">
         DELETE FROM t_bed WHERE id = #{id}
     </delete>
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT b.*, d.id as dorm_id, d.building_no, d.floor_no, d.room_no, d.dorm_type, d.bed_total, d.bed_available, d.status as dorm_status
+        FROM t_bed b
+        LEFT JOIN t_dormitory d ON b.dormitory_id = d.id
+        WHERE b.student_id = #{studentId}
+        LIMIT 1
+    </select>
 </mapper>

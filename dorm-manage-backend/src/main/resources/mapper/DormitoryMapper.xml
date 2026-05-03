@@ -43,6 +43,10 @@
         SELECT * FROM t_dormitory WHERE id = #{id}
     </select>
 
+    <select id="selectByRoomNo" resultMap="BaseResultMap">
+        SELECT * FROM t_dormitory WHERE room_no = #{roomNo} LIMIT 1
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_dormitory (building_no, floor_no, room_no, dorm_type, bed_total, bed_available, status)
         VALUES (#{buildingNo}, #{floorNo}, #{roomNo}, #{dormType}, #{bedTotal}, #{bedAvailable}, #{status})

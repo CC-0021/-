@@ -30,7 +30,9 @@ public interface BedMapper {
 
     int updateById(Bed bed);
 
-    int updateStatus(@Param("id") Long id, @Param("status") Integer status, @Param("studentId") Long studentId);
+    int updateStatus(@Param("id") Long id, @Param("status") Integer status, @Param("studentId") String studentId);
 
     int deleteById(Long id);
+
+    Bed selectByStudentId(@Param("studentId") String studentId);
 }
