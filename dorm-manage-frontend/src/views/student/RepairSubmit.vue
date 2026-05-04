@@ -1,10 +1,10 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">提交报修</h2>
-      <el-button @click="router.push('/repair')">返回</el-button>
+      <el-button @click="router.push('/repair')">返回列表</el-button>
     </div>
-    <el-card shadow="never" class="form-card">
+    <div class="form-card">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 520px">
         <el-form-item label="报修类型" prop="repairType">
           <el-select v-model="form.repairType" placeholder="请选择" style="width: 100%" size="large">
@@ -26,7 +26,6 @@
         </el-form-item>
         <el-form-item label="上传图片">
           <el-upload
-            class="upload-demo"
             action="/api/upload/image"
             :headers="{ 'Authorization': localStorage && localStorage.getItem('token') ? 'Bearer ' + localStorage.getItem('token') : '' }"
             :on-success="handleUploadSuccess"
@@ -38,23 +37,10 @@
             ref="uploadRef"
           >
             <template #default>
-              <el-icon class="avatar-uploader-icon"><Plus /></el-icon>
-            </template>
-            <template #file="{ file }">
-              <div class="upload-file-item">
-                <img :src="file.url" class="upload-file-image" />
-                <div class="upload-file-actions">
-                  <span class="upload-file-name">{{ file.name }}</span>
-                  <el-button type="text" size="small" @click.stop="handleRemove(file)">
-                    <el-icon><Delete /></el-icon>
-                  </el-button>
-                </div>
-              </div>
+              <el-icon class="upload-icon"><Plus /></el-icon>
             </template>
             <template #tip>
-              <div class="el-upload__tip">
-                最多上传3张图片，支持jpg、jpeg、png格式
-              </div>
+              <div class="upload-tip">最多上传3张图片，支持jpg、jpeg、png格式</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -63,7 +49,7 @@
           <el-button @click="router.push('/repair')">取消</el-button>
         </el-form-item>
       </el-form>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -71,7 +57,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Plus, Delete } from '@element-plus/icons-vue'
+import { Plus } from '@element-plus/icons-vue'
 import { submit as submitRepair } from '@/api/repair'
 
 const router = useRouter()
@@ -89,7 +75,7 @@ const rules = {
   phone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }]
 }
 
-function handleUploadSuccess(response, file, fileList) {
+function handleUploadSuccess(response, file, uploadFileList) {
   if (response.code === 200) {
     imageUrls.value.push(response.data)
     form.images = imageUrls.value.join(',')
@@ -101,19 +87,6 @@ function handleUploadSuccess(response, file, fileList) {
 
 function handleUploadError(error) {
   ElMessage.error('图片上传失败：' + error.message)
-}
-
-function handleRemove(file) {
-  const index = fileList.value.findIndex(item => item.uid === file.uid)
-  if (index > -1) {
-    fileList.value.splice(index, 1)
-    // 从imageUrls中移除对应的URL
-    const urlIndex = imageUrls.value.indexOf(file.url)
-    if (urlIndex > -1) {
-      imageUrls.value.splice(urlIndex, 1)
-      form.images = imageUrls.value.join(',')
-    }
-  }
 }
 
 async function submit() {
@@ -132,80 +105,17 @@ async function submit() {
 
 <style scoped>
 .form-card {
-  max-width: 600px;
-  border-radius: var(--card-radius);
-  transition: all var(--transition-normal);
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
 }
-
-.form-card:hover {
-  box-shadow: var(--student-card-shadow-hover);
-}
-
-.avatar-uploader-icon {
-  width: 100px;
-  height: 100px;
+.upload-icon {
   font-size: 24px;
-  color: #909399;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #d9d9d9;
-  border-radius: 8px;
-  transition: all var(--transition-fast);
+  color: #94a3b8;
 }
-
-.avatar-uploader-icon:hover {
-  border-color: var(--student-primary);
-  color: var(--student-primary);
-}
-
-.upload-file-item {
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: all var(--transition-fast);
-}
-
-.upload-file-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.upload-file-image {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-}
-
-.upload-file-actions {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  padding: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  opacity: 0;
-  transition: all var(--transition-fast);
-}
-
-.upload-file-item:hover .upload-file-actions {
-  opacity: 1;
-}
-
-.upload-file-name {
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-  margin-right: 8px;
-}
-
-.el-upload__tip {
+.upload-tip {
   font-size: 12px;
   color: #64748b;
   margin-top: 8px;

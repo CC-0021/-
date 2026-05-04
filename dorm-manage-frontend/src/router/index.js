@@ -17,9 +17,10 @@ const routes = [
   {
     path: '/',
     component: () => import('@/layout/StudentLayout.vue'),
-    redirect: '/announcement',
+    redirect: '/home',
     meta: { requireAuth: true, role: 1 },
     children: [
+      { path: 'home', name: 'StudentHome', component: () => import('@/views/student/Home.vue'), meta: { title: '首页' } },
       { path: 'announcement', name: 'Announcement', component: () => import('@/views/student/AnnouncementList.vue'), meta: { title: '公告' } },
       { path: 'announcement/:id', name: 'AnnouncementDetail', component: () => import('@/views/student/AnnouncementDetail.vue'), meta: { title: '公告详情' } },
       { path: 'repair', name: 'Repair', component: () => import('@/views/student/RepairList.vue'), meta: { title: '报修记录' } },
@@ -35,9 +36,10 @@ const routes = [
   {
     path: '/admin',
     component: () => import('@/layout/AdminLayout.vue'),
-    redirect: '/admin/announcement',
+    redirect: '/admin/dashboard',
     meta: { requireAuth: true, role: 2 },
     children: [
+      { path: 'dashboard', name: 'AdminDashboard', component: () => import('@/views/admin/Dashboard.vue'), meta: { title: '数据概览' } },
       { path: 'announcement', name: 'AdminAnnouncement', component: () => import('@/views/admin/AnnouncementManage.vue'), meta: { title: '公告管理' } },
       { path: 'repair', name: 'AdminRepair', component: () => import('@/views/admin/RepairManage.vue'), meta: { title: '报修管理' } },
       { path: 'checkin', name: 'AdminCheckIn', component: () => import('@/views/admin/CheckInManage.vue'), meta: { title: '入住审核' } },
@@ -71,11 +73,11 @@ router.beforeEach((to, from, next) => {
   const userType = Number(store.userType)
   const isAdminPath = to.path.indexOf('/admin') === 0
   if (userType === 2 && !isAdminPath) {
-    next({ path: '/admin/announcement' })
+    next({ path: '/admin/dashboard' })
     return
   }
   if (userType === 1 && isAdminPath) {
-    next({ path: '/announcement' })
+    next({ path: '/home' })
     return
   }
   next()

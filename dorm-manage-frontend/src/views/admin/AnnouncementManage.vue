@@ -2,23 +2,52 @@
   <div class="page-container">
     <div class="page-header">
       <h2 class="page-title">公告管理</h2>
-      <el-button type="primary" @click="openEdit()">新增公告</el-button>
+      <el-button type="primary" @click="openEdit()">
+        <el-icon><Plus /></el-icon>新增公告
+      </el-button>
     </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #818cf8)">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">公告总数</div>
+        <el-icon class="stat-icon"><Notification /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #34d399)">
+        <div class="stat-value">{{ publishedCount }}</div>
+        <div class="stat-label">已发布</div>
+        <el-icon class="stat-icon"><CircleCheck /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #fbbf24)">
+        <div class="stat-value">{{ draftCount }}</div>
+        <div class="stat-label">草稿</div>
+        <el-icon class="stat-icon"><EditPen /></el-icon>
+      </div>
+    </div>
+
     <el-table :data="list" stripe>
       <el-table-column prop="title" label="标题" min-width="200" />
-      <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            {{ statusMap[row.status] }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="publishTime" label="发布时间" width="180" />
-        <el-table-column label="操作" width="180" align="center">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="openEdit(row)">编辑</el-button>
-            <el-button v-if="row.status === 0" type="danger" link @click="remove(row.id)">删除</el-button>
-          </template>
-        </el-table-column>
+      <el-table-column prop="status" label="状态" width="100">
+        <template #default="{ row }">
+          <span class="status-badge" :class="{ 0: 'warning', 1: 'success', 2: 'info' }[row.status]">
+            <span class="dot" />{{ statusMap[row.status] }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="isTop" label="置顶" width="80">
+        <template #default="{ row }">
+          <el-tag v-if="row.isTop === 1" size="small" type="danger">置顶</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="publishTime" label="发布时间" width="180" />
+      <el-table-column label="操作" width="160">
+        <template #default="{ row }">
+          <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
+          <el-button v-if="row.status === 0" type="danger" link size="small" @click="remove(row.id)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+
     <div class="pagination-wrap">
       <el-pagination
         v-model:current-page="pageNum"
@@ -28,6 +57,7 @@
         @current-change="load"
       />
     </div>
+
     <el-dialog v-model="editVisible" :title="editId ? '编辑公告' : '新增公告'" width="600px" destroy-on-close>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="标题" prop="title">
@@ -55,8 +85,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Notification, CircleCheck, EditPen } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { adminPage, add, update, remove as removeApi } from '@/api/announcement'
 
@@ -69,22 +100,11 @@ const editVisible = ref(false)
 const editId = ref(null)
 const formRef = ref(null)
 const saveLoading = ref(false)
-const form = reactive({
-  title: '',
-  content: '',
-  status: '1',
-  isTop: 0,
-  publisherId: '',
-  publisherName: '',
-  publishTime: ''
-})
+const form = reactive({ title: '', content: '', status: '1', isTop: 0, publisherId: '', publisherName: '', publishTime: '' })
 
-// 状态映射
-const statusMap = {
-  0: '草稿',
-  1: '已发布',
-  2: '已撤回'
-}
+const statusMap = { 0: '草稿', 1: '已发布', 2: '已撤回' }
+const publishedCount = computed(() => list.value.filter(r => r.status === 1).length)
+const draftCount = computed(() => list.value.filter(r => r.status === 0).length)
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
@@ -125,12 +145,7 @@ async function save() {
   await formRef.value?.validate().catch(() => {})
   saveLoading.value = true
   try {
-    // 将 status 转换为数字
-    const formData = {
-      ...form,
-      status: parseInt(form.status),
-      id: editId.value
-    }
+    const formData = { ...form, status: parseInt(form.status), id: editId.value }
     if (editId.value) {
       await update(formData)
       ElMessage.success('更新成功')
@@ -154,7 +169,3 @@ async function remove(id) {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.pagination-wrap { margin-top: 20px; display: flex; justify-content: flex-end; }
-</style>

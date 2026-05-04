@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">系统公告</h2>
       <div class="toolbar">
@@ -7,13 +7,20 @@
         <el-button type="primary" @click="load">搜索</el-button>
       </div>
     </div>
-    <el-table :data="list" stripe style="width: 100%">
-      <el-table-column prop="title" label="标题" min-width="200" />
+    <el-table :data="list" stripe>
+      <el-table-column prop="title" label="标题" min-width="200">
+        <template #default="{ row }">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <el-tag v-if="row.isTop === 1" size="small" type="danger">置顶</el-tag>
+            <span>{{ row.title }}</span>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="publisherName" label="发布人" width="120" />
       <el-table-column prop="publishTime" label="发布时间" width="180" />
-      <el-table-column label="操作" width="100" align="center">
+      <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button type="primary" link @click="router.push('/announcement/' + row.id)">查看</el-button>
+          <el-button type="primary" link size="small" @click="router.push('/announcement/' + row.id)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -49,11 +56,3 @@ async function load() {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.pagination-wrap {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

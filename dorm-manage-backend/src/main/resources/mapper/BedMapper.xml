@@ -60,4 +60,8 @@
         WHERE b.student_id = #{studentId}
         LIMIT 1
     </select>
+
+    <select id="countByDormitoryIdAndStatus" resultType="int">
+        SELECT COUNT(*) FROM t_bed WHERE dormitory_id = #{dormitoryId} AND status = #{status}
+    </select>
 </mapper>

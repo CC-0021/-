@@ -1,23 +1,37 @@
 <template>
-  <div class="employee-manage">
-    <el-card shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span>员工信息管理</span>
-          <el-button type="primary" @click="openAddDialog">新增员工</el-button>
-        </div>
-      </template>
-      
-      <!-- 搜索表单 -->
-      <el-form :inline="true" :model="searchForm" class="search-form">
+  <div class="page-container">
+    <div class="page-header">
+      <h2 class="page-title">员工信息管理</h2>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #818cf8)">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">员工总数</div>
+        <el-icon class="stat-icon"><UserFilled /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #34d399)">
+        <div class="stat-value">{{ activeCount }}</div>
+        <div class="stat-label">在职员工</div>
+        <el-icon class="stat-icon"><CircleCheck /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #ef4444, #f87171)">
+        <div class="stat-value">{{ leaveCount }}</div>
+        <div class="stat-label">离职员工</div>
+        <el-icon class="stat-icon"><CircleClose /></el-icon>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <el-form :inline="true" :model="searchForm">
         <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入姓名" />
+          <el-input v-model="searchForm.name" placeholder="请输入" clearable />
         </el-form-item>
         <el-form-item label="部门">
-          <el-input v-model="searchForm.department" placeholder="请输入部门" />
+          <el-input v-model="searchForm.department" placeholder="请输入" clearable />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态">
+          <el-select v-model="searchForm.status" placeholder="全部" clearable>
             <el-option label="在职" value="1" />
             <el-option label="离职" value="0" />
           </el-select>
@@ -27,56 +41,59 @@
           <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-form>
-      
-      <!-- 数据表格 -->
-      <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" />
-<!--        <el-table-column prop="id" label="ID" width="80" />-->
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="gender" label="性别" width="80">
-          <template #default="scope">
-            {{ scope.row.gender === 1 ? '男' : scope.row.gender === 2 ? '女' : '未知' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="phone" label="联系电话" />
-        <el-table-column prop="department" label="所属部门" />
-        <el-table-column prop="position" label="职位" />
-        <el-table-column prop="hireDate" label="入职时间" />
-        <el-table-column prop="status" label="状态" width="80">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '在职' : '离职' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="scope">
-            <el-button size="small" @click="openEditDialog(scope.row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      
-      <!-- 分页 -->
-      <div class="pagination">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+    </div>
+
+    <div class="action-bar">
+      <div class="action-bar-left">
+        <el-button type="primary" @click="openAddDialog">
+          <el-icon><Plus /></el-icon>新增员工
+        </el-button>
+        <el-button v-if="selectedIds.length > 0" type="danger" @click="handleBatchDelete">
+          <el-icon><Delete /></el-icon>批量删除
+        </el-button>
       </div>
-      
-      <!-- 批量操作 -->
-      <div class="batch-operation" v-if="selectedIds.length > 0">
-        <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
+      <div class="action-bar-right">
+        <el-button @click="getList"><el-icon><Refresh /></el-icon></el-button>
       </div>
-    </el-card>
-    
-    <!-- 新增/编辑对话框 -->
+    </div>
+
+    <el-table :data="tableData" stripe @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="gender" label="性别" width="80">
+        <template #default="{ row }">{{ row.gender === 1 ? '男' : row.gender === 2 ? '女' : '未知' }}</template>
+      </el-table-column>
+      <el-table-column prop="phone" label="联系电话" />
+      <el-table-column prop="department" label="所属部门" />
+      <el-table-column prop="position" label="职位" />
+      <el-table-column prop="hireDate" label="入职时间" />
+      <el-table-column prop="status" label="状态" width="100">
+        <template #default="{ row }">
+          <span class="status-badge" :class="row.status === 1 ? 'success' : 'danger'">
+            <span class="dot" />{{ row.status === 1 ? '在职' : '离职' }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="160" fixed="right">
+        <template #default="{ row }">
+          <el-button type="primary" link size="small" @click="openEditDialog(row)">编辑</el-button>
+          <el-button type="danger" link size="small" @click="handleDelete(row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="pageNum"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
+
     <el-dialog v-model="dialogVisible" :title="dialogType === 'add' ? '新增员工' : '编辑员工'" width="500px">
       <el-form :model="form" label-width="100px">
         <el-form-item label="姓名" required>
@@ -108,181 +125,68 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">确定</el-button>
-        </span>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Delete, Refresh, UserFilled, CircleCheck, CircleClose } from '@element-plus/icons-vue'
 import employeeApi from '@/api/employee'
 
-// 表格数据
 const tableData = ref([])
 const total = ref(0)
 const pageNum = ref(1)
 const pageSize = ref(10)
-
-// 搜索表单
-const searchForm = reactive({
-  name: '',
-  department: '',
-  status: ''
-})
-
-// 选中的ID
 const selectedIds = ref([])
 
-// 对话框
+const searchForm = reactive({ name: '', department: '', status: '' })
+
 const dialogVisible = ref(false)
 const dialogType = ref('add')
-const form = reactive({
-  id: '',
-  name: '',
-  gender: '',
-  phone: '',
-  department: '',
-  position: '',
-  hireDate: '',
-  status: 1
-})
+const form = reactive({ id: '', name: '', gender: '', phone: '', department: '', position: '', hireDate: '', status: 1 })
 
-// 获取列表
+const activeCount = computed(() => tableData.value.filter(r => r.status === 1).length)
+const leaveCount = computed(() => tableData.value.filter(r => r.status === 0).length)
+
 const getList = () => {
   employeeApi.page({
-    pageNum: pageNum.value,
-    pageSize: pageSize.value,
-    name: searchForm.name,
-    department: searchForm.department,
-    status: searchForm.status
-  }).then(res => {
-    tableData.value = res.data.list
-    total.value = res.data.total
-  })
+    pageNum: pageNum.value, pageSize: pageSize.value,
+    name: searchForm.name, department: searchForm.department, status: searchForm.status
+  }).then(res => { tableData.value = res.data.list; total.value = res.data.total })
 }
 
-// 重置表单
-const resetForm = () => {
-  searchForm.name = ''
-  searchForm.department = ''
-  searchForm.status = ''
-  getList()
-}
+const resetForm = () => { searchForm.name = ''; searchForm.department = ''; searchForm.status = ''; getList() }
+const handleSizeChange = (size) => { pageSize.value = size; getList() }
+const handleCurrentChange = (current) => { pageNum.value = current; getList() }
+const handleSelectionChange = (val) => { selectedIds.value = val.map(item => item.id) }
 
-// 分页处理
-const handleSizeChange = (size) => {
-  pageSize.value = size
-  getList()
-}
-
-const handleCurrentChange = (current) => {
-  pageNum.value = current
-  getList()
-}
-
-// 选择处理
-const handleSelectionChange = (val) => {
-  selectedIds.value = val.map(item => item.id)
-}
-
-// 打开新增对话框
 const openAddDialog = () => {
   dialogType.value = 'add'
-  Object.assign(form, {
-    id: '',
-    name: '',
-    gender: '',
-    phone: '',
-    department: '',
-    position: '',
-    hireDate: '',
-    status: 1
-  })
+  Object.assign(form, { id: '', name: '', gender: '', phone: '', department: '', position: '', hireDate: '', status: 1 })
   dialogVisible.value = true
 }
 
-// 打开编辑对话框
-const openEditDialog = (row) => {
-  dialogType.value = 'edit'
-  Object.assign(form, row)
-  dialogVisible.value = true
-}
+const openEditDialog = (row) => { dialogType.value = 'edit'; Object.assign(form, row); dialogVisible.value = true }
 
-// 提交表单
 const handleSubmit = () => {
-  if (dialogType.value === 'add') {
-    employeeApi.add(form).then(() => {
-      dialogVisible.value = false
-      getList()
-      ElMessage.success('新增成功')
-    })
-  } else {
-    employeeApi.update(form).then(() => {
-      dialogVisible.value = false
-      getList()
-      ElMessage.success('编辑成功')
-    })
-  }
+  const action = dialogType.value === 'add' ? employeeApi.add(form) : employeeApi.update(form)
+  action.then(() => { dialogVisible.value = false; getList(); ElMessage.success(dialogType.value === 'add' ? '新增成功' : '编辑成功') })
 }
 
-// 删除
 const handleDelete = (id) => {
-  ElMessageBox.confirm('确定要删除吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    employeeApi.delete(id).then(() => {
-      getList()
-      ElMessage.success('删除成功')
-    })
-  })
+  ElMessageBox.confirm('确定要删除吗？', '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })
+    .then(() => { employeeApi.delete(id).then(() => { getList(); ElMessage.success('删除成功') }) })
 }
 
-// 批量删除
 const handleBatchDelete = () => {
-  ElMessageBox.confirm('确定要批量删除吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    employeeApi.batchDelete(selectedIds.value).then(() => {
-      getList()
-      selectedIds.value = []
-      ElMessage.success('批量删除成功')
-    })
-  })
+  ElMessageBox.confirm('确定要批量删除吗？', '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })
+    .then(() => { employeeApi.batchDelete(selectedIds.value).then(() => { getList(); selectedIds.value = []; ElMessage.success('批量删除成功') }) })
 }
 
-// 页面挂载时获取数据
-onMounted(() => {
-  getList()
-})
+onMounted(() => { getList() })
 </script>
-
-<style scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.search-form {
-  margin-bottom: 20px;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.batch-operation {
-  margin-top: 10px;
-}
-</style>

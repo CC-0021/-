@@ -1,9 +1,13 @@
 <template>
-  <div class="page-container">
-    <el-button type="default" @click="router.back()">返回</el-button>
+  <div class="page-container student-page">
+    <el-button @click="router.back()" style="margin-bottom: 16px">返回</el-button>
     <div class="detail-card" v-loading="loading">
       <h1 class="detail-title">{{ detail.title }}</h1>
-      <div class="meta">发布人：{{ detail.publisherName }} · 发布时间：{{ detail.publishTime }}</div>
+      <div class="meta">
+        <span>发布人：{{ detail.publisherName }}</span>
+        <span class="meta-divider">·</span>
+        <span>发布时间：{{ detail.publishTime }}</span>
+      </div>
       <div class="content" v-html="detail.content" />
     </div>
   </div>
@@ -34,27 +38,33 @@ onMounted(load)
 
 <style scoped>
 .detail-card {
-  margin-top: 20px;
-  padding: 24px;
+  padding: 28px;
   background: #fff;
-  border-radius: var(--card-radius);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
 }
 .detail-title {
   margin: 0 0 12px;
   font-size: 22px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  font-weight: 700;
+  color: #0f172a;
 }
 .meta {
-  color: var(--el-text-color-secondary);
+  color: #94a3b8;
   font-size: 14px;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meta-divider {
+  color: #e2e8f0;
 }
 .content {
   line-height: 1.8;
-  color: var(--el-text-color-regular);
+  color: #334155;
 }
 </style>

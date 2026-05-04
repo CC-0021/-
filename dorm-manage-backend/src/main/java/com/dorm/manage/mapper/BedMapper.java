@@ -35,4 +35,6 @@ public interface BedMapper {
     int deleteById(Long id);
 
     Bed selectByStudentId(@Param("studentId") String studentId);
+
+    int countByDormitoryIdAndStatus(@Param("dormitoryId") Long dormitoryId, @Param("status") Integer status);
 }

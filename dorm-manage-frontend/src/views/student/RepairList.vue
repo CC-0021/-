@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">报修记录</h2>
       <div class="toolbar">
@@ -10,7 +10,9 @@
           <el-option label="已撤销" :value="3" />
         </el-select>
         <el-button type="primary" @click="load">查询</el-button>
-        <el-button type="success" @click="router.push('/repair/submit')">提交报修</el-button>
+        <el-button type="primary" plain @click="router.push('/repair/submit')">
+          <el-icon><Plus /></el-icon>提交报修
+        </el-button>
       </div>
     </div>
     <el-table :data="list" stripe>
@@ -18,15 +20,17 @@
       <el-table-column prop="repairType" label="类型" width="100" />
       <el-table-column prop="roomNo" label="宿舍号" width="100" />
       <el-table-column prop="createTime" label="提交时间" width="180" />
-      <el-table-column prop="status" label="状态" width="90">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="statusTagType(row.status)" size="small">{{ statusText(row.status) }}</el-tag>
+          <span class="status-badge" :class="statusClass(row.status)">
+            <span class="dot" />{{ statusText(row.status) }}
+          </span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="150" align="center">
+      <el-table-column label="操作" width="150">
         <template #default="{ row }">
-          <el-button type="primary" link @click="router.push('/repair/detail/' + row.id)">详情</el-button>
-          <el-button v-if="row.status === 0" type="danger" link @click="cancel(row.id)">撤销</el-button>
+          <el-button type="primary" link size="small" @click="router.push('/repair/detail/' + row.id)">详情</el-button>
+          <el-button v-if="row.status === 0" type="danger" link size="small" @click="cancel(row.id)">撤销</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,6 +50,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { myList, cancel as cancelApi } from '@/api/repair'
 
 const router = useRouter()
@@ -56,7 +61,7 @@ const total = ref(0)
 const list = ref([])
 
 const statusText = (s) => ['待处理', '处理中', '已完成', '已撤销'][s] || ''
-const statusTagType = (s) => ({ 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' })[s] || 'info'
+const statusClass = (s) => ({ 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' })[s] || 'info'
 
 async function load() {
   const res = await myList({ pageNum: pageNum.value, pageSize, status: status.value })
@@ -73,7 +78,3 @@ async function cancel(id) {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.pagination-wrap { margin-top: 20px; display: flex; justify-content: flex-end; }
-</style>

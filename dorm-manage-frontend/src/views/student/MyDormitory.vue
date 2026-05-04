@@ -1,48 +1,51 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">我的宿舍</h2>
     </div>
 
-    <!-- 未分配宿舍提示 -->
-    <el-empty v-if="!loading && !dormitory" description="暂无宿舍分配信息" />
+    <div v-if="!loading && !dormitory" class="empty-state">
+      <el-icon class="empty-icon"><House /></el-icon>
+      <p>暂无宿舍分配信息</p>
+      <span>请联系管理员进行宿舍分配</span>
+    </div>
 
-    <!-- 宿舍信息卡片 -->
     <template v-else-if="dormitory">
-      <el-card class="dorm-card" shadow="hover">
-        <template #header>
-          <div class="card-header">
+      <div class="dorm-card">
+        <div class="dorm-card-header">
+          <div class="dorm-title-wrap">
+            <el-icon class="dorm-icon"><House /></el-icon>
             <span class="dorm-title">{{ dormitory.buildingNo }}号楼 {{ dormitory.roomNo }}</span>
-            <el-tag type="success" size="small">{{ dormitory.dormType }}</el-tag>
           </div>
-        </template>
-        <div class="dorm-info">
+          <span class="status-badge success">
+            <span class="dot" />{{ dormitory.dormType }}
+          </span>
+        </div>
+        <div class="dorm-info-grid">
           <div class="info-item">
-            <span class="label">楼层：</span>
-            <span class="value">{{ dormitory.floorNo }}层</span>
-          </div>
-          <div class="info-item">
-            <span class="label">我的床位：</span>
-            <span class="value highlight">{{ myBed?.bedNo }}</span>
+            <span class="info-label">楼层</span>
+            <span class="info-value">{{ dormitory.floorNo }}层</span>
           </div>
           <div class="info-item">
-            <span class="label">床位总数：</span>
-            <span class="value">{{ dormitory.bedTotal }}</span>
+            <span class="info-label">我的床位</span>
+            <span class="info-value highlight">{{ myBed?.bedNo }}</span>
           </div>
           <div class="info-item">
-            <span class="label">空闲床位：</span>
-            <span class="value">{{ dormitory.bedAvailable }}</span>
+            <span class="info-label">床位总数</span>
+            <span class="info-value">{{ dormitory.bedTotal }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">空闲床位</span>
+            <span class="info-value">{{ dormitory.bedAvailable }}</span>
           </div>
         </div>
-      </el-card>
+      </div>
 
-      <!-- 宿舍成员列表 -->
-      <el-card class="roommates-card" shadow="hover">
-        <template #header>
-          <div class="card-header">
-            <span>宿舍成员</span>
-          </div>
-        </template>
+      <div class="roommates-card">
+        <div class="card-section-title">
+          <el-icon><User /></el-icon>
+          <span>宿舍成员</span>
+        </div>
         <el-table :data="roommates" stripe>
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="bedNo" label="床位号" width="100" />
@@ -50,20 +53,20 @@
             <template #default="{ row }">
               <span :class="{ 'self-tag': row.studentId === currentUserId }">
                 {{ row.studentName || '暂无' }}
-                <el-tag v-if="row.studentId === currentUserId" type="primary" size="small">我</el-tag>
+                <el-tag v-if="row.studentId === currentUserId" type="primary" size="small" effect="dark">我</el-tag>
               </span>
             </template>
           </el-table-column>
           <el-table-column prop="studentNo" label="学号" />
           <el-table-column prop="status" label="状态" width="100">
             <template #default="{ row }">
-              <el-tag :type="row.status === 1 ? 'success' : 'info'" size="small">
-                {{ row.status === 1 ? '已入住' : '空闲' }}
-              </el-tag>
+              <span class="status-badge" :class="row.status === 1 ? 'success' : 'info'">
+                <span class="dot" />{{ row.status === 1 ? '已入住' : '空闲' }}
+              </span>
             </template>
           </el-table-column>
         </el-table>
-      </el-card>
+      </div>
     </template>
   </div>
 </template>
@@ -71,6 +74,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { House, User } from '@element-plus/icons-vue'
 import bedApi from '@/api/bed'
 
 const loading = ref(false)
@@ -87,7 +91,6 @@ async function load() {
     dormitory.value = data.dormitory || null
     myBed.value = data.myBed || null
     roommates.value = data.roommates || []
-    // 从localStorage获取当前用户ID
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
     currentUserId.value = userInfo.id
   } catch (err) {
@@ -101,57 +104,105 @@ onMounted(load)
 </script>
 
 <style scoped>
-.page-container {
-  padding: 20px;
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #94a3b8;
 }
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.empty-icon {
+  font-size: 48px;
+  color: #e2e8f0;
+  margin-bottom: 16px;
 }
-.page-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 500;
+.empty-state p {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0 0 4px;
+}
+.empty-state span {
+  font-size: 13px;
 }
 .dorm-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
   margin-bottom: 20px;
 }
-.card-header {
+.dorm-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
 }
-.dorm-title {
-  font-size: 18px;
-  font-weight: bold;
-}
-.dorm-info {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-.info-item {
+.dorm-title-wrap {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
-.label {
-  color: #666;
-  margin-right: 8px;
+.dorm-icon {
+  font-size: 22px;
+  color: #0ea5e9;
 }
-.value {
-  font-weight: 500;
+.dorm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
 }
-.highlight {
-  color: #409eff;
-  font-size: 16px;
-  font-weight: bold;
+.dorm-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
-.self-tag {
-  font-weight: bold;
+.info-item {
+  text-align: center;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+.info-label {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+.info-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+}
+.info-value.highlight {
+  color: #0ea5e9;
 }
 .roommates-card {
-  margin-top: 20px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+}
+.card-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+.card-section-title .el-icon {
+  color: #0ea5e9;
+}
+.self-tag {
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  .dorm-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

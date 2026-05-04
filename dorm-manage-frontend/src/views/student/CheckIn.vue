@@ -1,17 +1,19 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">入住登记</h2>
-      <el-button type="primary" @click="dialogVisible = true">提交登记</el-button>
+      <el-button type="primary" @click="dialogVisible = true">
+        <el-icon><Plus /></el-icon>提交登记
+      </el-button>
     </div>
     <el-table :data="list" stripe>
       <el-table-column prop="roomDisplay" label="拟入住房间" />
       <el-table-column prop="checkInTime" label="拟入住时间" width="180" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : row.status === 2 ? 'danger' : 'warning'" size="small">
-            {{ ['待审核', '审核通过', '审核驳回'][row.status] }}
-          </el-tag>
+          <span class="status-badge" :class="['warning', 'success', 'danger'][row.status]">
+            <span class="dot" />{{ ['待审核', '审核通过', '审核驳回'][row.status] }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="rejectReason" label="驳回理由" show-overflow-tooltip />
@@ -39,6 +41,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { myList, submit as submitApi } from '@/api/checkin'
 
 const list = ref([])

@@ -1,15 +1,19 @@
 <template>
-  <div class="page-container">
+  <div class="page-container student-page">
     <div class="page-header">
       <h2 class="page-title">留言</h2>
-      <el-button type="primary" @click="dialogVisible = true">发起留言</el-button>
+      <el-button type="primary" @click="dialogVisible = true">
+        <el-icon><Plus /></el-icon>发起留言
+      </el-button>
     </div>
     <el-table :data="list" stripe>
       <el-table-column prop="title" label="标题" width="200" />
       <el-table-column prop="content" label="内容" show-overflow-tooltip />
-      <el-table-column prop="status" label="状态" width="90">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'" size="small">{{ row.status === 1 ? '已回复' : '未回复' }}</el-tag>
+          <span class="status-badge" :class="row.status === 1 ? 'success' : 'info'">
+            <span class="dot" />{{ row.status === 1 ? '已回复' : '未回复' }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="replyContent" label="回复内容" show-overflow-tooltip />
@@ -38,6 +42,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { myList, add } from '@/api/message'
 
 const list = ref([])

@@ -3,23 +3,50 @@
     <div class="page-header">
       <h2 class="page-title">报修管理</h2>
     </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #818cf8)">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">报修总数</div>
+        <el-icon class="stat-icon"><Tools /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #fbbf24)">
+        <div class="stat-value">{{ pendingCount }}</div>
+        <div class="stat-label">待处理</div>
+        <el-icon class="stat-icon"><Clock /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)">
+        <div class="stat-value">{{ processingCount }}</div>
+        <div class="stat-label">处理中</div>
+        <el-icon class="stat-icon"><Loading /></el-icon>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #34d399)">
+        <div class="stat-value">{{ completedCount }}</div>
+        <div class="stat-label">已完成</div>
+        <el-icon class="stat-icon"><CircleCheck /></el-icon>
+      </div>
+    </div>
+
     <el-table :data="list" stripe>
       <el-table-column prop="repairNo" label="报修单号" width="180" />
       <el-table-column prop="repairType" label="类型" width="100" />
       <el-table-column prop="roomNo" label="宿舍号" width="100" />
       <el-table-column prop="description" label="描述" show-overflow-tooltip />
-      <el-table-column prop="status" label="状态" width="90">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="statusTagType(row.status)" size="small">{{ statusText(row.status) }}</el-tag>
+          <span class="status-badge" :class="statusClass(row.status)">
+            <span class="dot" />{{ statusText(row.status) }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="handlerName" label="处理人" width="100" />
-      <el-table-column label="操作" width="100" align="center">
+      <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button v-if="row.status !== 2 && row.status !== 3" type="primary" link @click="openHandle(row)">处理</el-button>
+          <el-button v-if="row.status !== 2 && row.status !== 3" type="primary" link size="small" @click="openHandle(row)">处理</el-button>
         </template>
       </el-table-column>
     </el-table>
+
     <div class="pagination-wrap">
       <el-pagination
         v-model:current-page="pageNum"
@@ -29,6 +56,7 @@
         @current-change="load"
       />
     </div>
+
     <el-dialog v-model="handleVisible" title="处理报修" width="500px" destroy-on-close>
       <el-form :model="handleForm" label-width="80px">
         <el-form-item label="处理备注">
@@ -47,8 +75,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Tools, Clock, Loading, CircleCheck } from '@element-plus/icons-vue'
 import { adminPage, adminHandle } from '@/api/repair'
 
 const list = ref([])
@@ -59,7 +88,11 @@ const handleVisible = ref(false)
 const handleForm = reactive({ id: null, handleRemark: '', complete: false })
 
 const statusText = (s) => ['待处理', '处理中', '已完成', '已撤销'][s] || ''
-const statusTagType = (s) => ({ 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' })[s] || 'info'
+const statusClass = (s) => ({ 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' })[s] || 'info'
+
+const pendingCount = computed(() => list.value.filter(r => r.status === 0).length)
+const processingCount = computed(() => list.value.filter(r => r.status === 1).length)
+const completedCount = computed(() => list.value.filter(r => r.status === 2).length)
 
 async function load() {
   const res = await adminPage({ pageNum: pageNum.value, pageSize })
@@ -83,7 +116,3 @@ async function submitHandle() {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.pagination-wrap { margin-top: 20px; display: flex; justify-content: flex-end; }
-</style>
