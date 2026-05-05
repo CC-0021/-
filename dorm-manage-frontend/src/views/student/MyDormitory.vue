@@ -106,96 +106,97 @@ onMounted(load)
 <style scoped>
 .empty-state {
   text-align: center;
-  padding: 80px 20px;
+  padding: 100px 20px;
   color: #94a3b8;
 }
 .empty-icon {
-  font-size: 48px;
+  font-size: 64px;
   color: #e2e8f0;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .empty-state p {
-  font-size: 16px;
+  font-size: 18px;
   color: #64748b;
-  margin: 0 0 4px;
+  margin: 0 0 6px;
 }
 .empty-state span {
-  font-size: 13px;
+  font-size: 15px;
 }
 .dorm-card {
   background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgba(14, 165, 233, 0.1);
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
-  margin-bottom: 20px;
+  border-radius: 18px;
+  padding: 36px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.06);
+  margin-bottom: 28px;
 }
 .dorm-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #f1f5f9;
 }
 .dorm-title-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 .dorm-icon {
-  font-size: 22px;
-  color: #0ea5e9;
+  font-size: 28px;
+  color: #f97316;
 }
 .dorm-title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: #0f172a;
 }
 .dorm-info-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 24px;
 }
 .info-item {
   text-align: center;
-  padding: 12px;
+  padding: 20px 16px;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 .info-label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: #94a3b8;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .info-value {
   display: block;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   color: #334155;
 }
 .info-value.highlight {
-  color: #0ea5e9;
+  color: #f97316;
 }
 .roommates-card {
   background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgba(14, 165, 233, 0.1);
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  border-radius: 18px;
+  padding: 36px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.06);
 }
 .card-section-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 10px;
+  font-size: 18px;
   font-weight: 600;
   color: #0f172a;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .card-section-title .el-icon {
-  color: #0ea5e9;
+  color: #f97316;
+  font-size: 20px;
 }
 .self-tag {
   font-weight: 600;
@@ -203,6 +204,16 @@ onMounted(load)
 @media (max-width: 768px) {
   .dorm-info-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .dorm-card, .roommates-card {
+    padding: 24px;
+  }
+  .dorm-title {
+    font-size: 20px;
+  }
+  .info-value {
+    font-size: 18px;
   }
 }
 </style>

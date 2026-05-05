@@ -38,33 +38,34 @@ onMounted(load)
 
 <style scoped>
 .detail-card {
-  padding: 28px;
+  padding: 40px;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid rgba(14, 165, 233, 0.1);
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  border-radius: 18px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.06);
 }
 .detail-title {
-  margin: 0 0 12px;
-  font-size: 22px;
+  margin: 0 0 16px;
+  font-size: 26px;
   font-weight: 700;
   color: #0f172a;
 }
 .meta {
   color: #94a3b8;
-  font-size: 14px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  font-size: 15px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .meta-divider {
   color: #e2e8f0;
 }
 .content {
-  line-height: 1.8;
+  line-height: 1.9;
   color: #334155;
+  font-size: 16px;
 }
 </style>

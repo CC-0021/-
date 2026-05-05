@@ -48,9 +48,15 @@ public class AuthInterceptor implements HandlerInterceptor {
                 writeError(response, ResultCode.UNAUTHORIZED, "登录已过期，请重新登录");
                 return false;
             }
+            Integer userType = jwtUtil.getUserType(claims);
             request.setAttribute("userId", jwtUtil.getUserId(claims));
             request.setAttribute("username", username);
-            request.setAttribute("userType", jwtUtil.getUserType(claims));
+            request.setAttribute("userType", userType);
+            // 管理端接口仅允许管理员访问
+            if (request.getRequestURI().contains("/admin/") && (userType == null || userType != 2)) {
+                writeError(response, ResultCode.FORBIDDEN, "权限不足，仅管理员可操作");
+                return false;
+            }
             return true;
         } catch (ExpiredJwtException e) {
             writeError(response, ResultCode.UNAUTHORIZED, "登录已过期，请重新登录");

@@ -86,63 +86,64 @@ onMounted(load)
 
 <style scoped>
 .detail-card {
-  padding: 28px;
+  padding: 40px;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid rgba(14, 165, 233, 0.1);
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  border-radius: 18px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.06);
 }
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #f1f5f9;
 }
 .detail-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: #0f172a;
 }
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 24px;
 }
 .detail-item {
-  padding: 12px 16px;
+  padding: 18px 20px;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 .detail-label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: #94a3b8;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .detail-value {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   color: #334155;
   font-weight: 500;
 }
 .eval-section {
-  margin-top: 24px;
-  padding-top: 20px;
+  margin-top: 32px;
+  padding-top: 24px;
   border-top: 1px solid #f1f5f9;
 }
 .eval-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 10px;
+  font-size: 18px;
   font-weight: 600;
   color: #0f172a;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .eval-title .el-icon {
   color: #f59e0b;
+  font-size: 20px;
 }
 </style>

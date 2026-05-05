@@ -5,7 +5,7 @@
       <el-button @click="router.push('/repair')">返回列表</el-button>
     </div>
     <div class="form-card">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 520px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 640px">
         <el-form-item label="报修类型" prop="repairType">
           <el-select v-model="form.repairType" placeholder="请选择" style="width: 100%" size="large">
             <el-option label="水电故障" value="水电故障" />
@@ -106,18 +106,18 @@ async function submit() {
 <style scoped>
 .form-card {
   background: #fff;
-  border-radius: 16px;
-  padding: 28px;
-  border: 1px solid rgba(14, 165, 233, 0.1);
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+  border-radius: 18px;
+  padding: 40px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  box-shadow: 0 4px 24px rgba(249, 115, 22, 0.06);
 }
 .upload-icon {
-  font-size: 24px;
+  font-size: 28px;
   color: #94a3b8;
 }
 .upload-tip {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748b;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 </style>

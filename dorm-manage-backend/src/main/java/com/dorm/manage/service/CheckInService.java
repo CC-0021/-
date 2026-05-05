@@ -1,8 +1,11 @@
 package com.dorm.manage.service;
 
 import com.dorm.manage.common.PageResult;
+import com.dorm.manage.entity.BedAssignLog;
 import com.dorm.manage.entity.CheckIn;
 import com.dorm.manage.exception.BusinessException;
+import com.dorm.manage.mapper.BedAssignLogMapper;
+import com.dorm.manage.mapper.BedMapper;
 import com.dorm.manage.mapper.CheckInMapper;
 import com.dorm.manage.mapper.UserMapper;
 import com.dorm.manage.entity.User;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,6 +27,8 @@ public class CheckInService {
 
     private final CheckInMapper checkInMapper;
     private final UserMapper userMapper;
+    private final BedMapper bedMapper;
+    private final BedAssignLogMapper bedAssignLogMapper;
 
     public void submit(CheckIn checkIn, Long studentId) {
         User user = userMapper.selectById(studentId);
@@ -61,8 +67,19 @@ public class CheckInService {
         c.setStatus(pass ? 1 : 2);
         c.setRejectReason(rejectReason);
         c.setAuditUserId(auditUserId);
-        c.setAuditTime(java.time.LocalDateTime.now());
+        c.setAuditTime(LocalDateTime.now());
         c.setBedId(bedId);
         checkInMapper.updateById(c);
+        // 审核通过后同步床位状态并记录分配日志
+        if (pass && bedId != null) {
+            bedMapper.updateStatus(bedId, 1, c.getStudentNo());
+            BedAssignLog log = new BedAssignLog();
+            log.setStudentId(c.getStudentId());
+            log.setNewBedId(bedId);
+            log.setAssignUserId(auditUserId);
+            log.setAssignTime(LocalDateTime.now());
+            log.setRemark("入住登记审核通过");
+            bedAssignLogMapper.insert(log);
+        }
     }
 }

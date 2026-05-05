@@ -10,12 +10,12 @@
         </div>
         <div class="topbar-right">
           <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0" class="notify-badge">
-            <el-icon :size="20" class="notify-icon"><Bell /></el-icon>
+            <el-icon :size="22" class="notify-icon"><Bell /></el-icon>
           </el-badge>
           <span class="welcome-text">你好，{{ userStore.displayName }}</span>
           <el-dropdown trigger="click" @command="handleCommand" class="user-dropdown">
             <div class="avatar-btn">
-              <el-icon :size="18"><User /></el-icon>
+              <el-icon :size="20"><User /></el-icon>
             </div>
             <template #dropdown>
               <el-dropdown-menu>
@@ -40,9 +40,7 @@
             class="nav-item"
             :class="{ active: activeMenu === item.path }"
           >
-            <div class="nav-icon-wrap">
-              <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
-            </div>
+            <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
             <span class="nav-label">{{ item.label }}</span>
           </router-link>
         </nav>
@@ -128,22 +126,21 @@ onUnmounted(() => {
 <style scoped>
 .student-portal {
   min-height: 100vh;
-  background: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 35%, #f0fdfa 100%);
+  background: #fafaf9;
   font-family: 'Noto Sans SC', system-ui, sans-serif;
 }
 
 .portal-topbar {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  color: #fff;
-  padding: 0 28px;
-  height: 60px;
-  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
+  background: #fff;
+  border-bottom: 1px solid #f0efed;
+  padding: 0 48px;
+  height: 68px;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 .topbar-inner {
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   height: 100%;
   display: flex;
@@ -156,118 +153,123 @@ onUnmounted(() => {
   gap: 12px;
 }
 .brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 .brand-text {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
+  color: #1c1917;
   letter-spacing: 0.5px;
 }
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 .notify-badge {
   cursor: pointer;
 }
 .notify-icon {
-  color: rgba(255, 255, 255, 0.85);
+  color: #78716c;
   transition: color 0.2s;
 }
 .notify-icon:hover {
-  color: #fff;
+  color: #f97316;
 }
 .welcome-text {
-  font-size: 14px;
-  opacity: 0.95;
+  font-size: 15px;
+  color: #78716c;
 }
 .avatar-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fafaf9;
+  border: 2px solid #f0efed;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: #78716c;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 .avatar-btn:hover {
-  background: rgba(255, 255, 255, 0.35);
+  border-color: #f97316;
+  color: #f97316;
 }
 
 .portal-body {
   display: flex;
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 24px;
-  gap: 24px;
-  min-height: calc(100vh - 60px);
+  padding: 32px 48px;
+  gap: 36px;
+  min-height: calc(100vh - 68px);
 }
 
 .portal-sidebar {
-  width: 200px;
+  width: 260px;
   flex-shrink: 0;
 }
 .nav-menu {
   background: #fff;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.12);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0efed;
   display: flex;
   flex-direction: column;
   gap: 4px;
   position: sticky;
-  top: 84px;
+  top: 100px;
 }
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 14px;
+  padding: 14px 18px;
   border-radius: 12px;
-  color: #64748b;
+  color: #78716c;
   text-decoration: none;
-  font-size: 15px;
-  transition: all 0.25s ease;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: #f97316;
+  transition: height 0.2s ease;
 }
 .nav-item:hover {
-  background: #f0f9ff;
-  color: #0ea5e9;
-  transform: translateX(4px);
+  background: #fff7ed;
+  color: #f97316;
 }
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(14, 165, 233, 0.08) 100%);
-  color: #0284c7;
+  background: #fff7ed;
+  color: #ea580c;
   font-weight: 600;
 }
-.nav-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f5f9;
-  transition: all 0.25s ease;
-}
-.nav-item:hover .nav-icon-wrap {
-  background: rgba(14, 165, 233, 0.1);
-}
-.nav-item.active .nav-icon-wrap {
-  background: rgba(14, 165, 233, 0.15);
+.nav-item.active::before {
+  height: 20px;
 }
 .nav-icon {
-  font-size: 18px;
+  font-size: 22px;
+  flex-shrink: 0;
 }
 
 .portal-main {
@@ -275,7 +277,7 @@ onUnmounted(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 .main-head {
   padding: 0 4px;
@@ -285,19 +287,19 @@ onUnmounted(() => {
 }
 .page-name {
   margin: 0;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
-  color: #0f172a;
+  color: #1c1917;
   letter-spacing: -0.02em;
 }
 .page-breadcrumb {
-  font-size: 13px;
+  font-size: 14px;
 }
 .page-breadcrumb :deep(.el-breadcrumb__inner) {
-  color: #94a3b8;
+  color: #a8a29e;
 }
 .page-breadcrumb :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: #0284c7;
+  color: #ea580c;
 }
 .main-content {
   flex: 1;
@@ -323,20 +325,20 @@ onUnmounted(() => {
   right: 40px;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #ea580c);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
   transition: all 0.3s ease;
   z-index: 100;
 }
 .back-top:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.45);
 }
 
 @media (max-width: 768px) {
@@ -351,27 +353,30 @@ onUnmounted(() => {
     flex-direction: row;
     overflow-x: auto;
     position: static;
-    padding: 8px;
-    gap: 4px;
+    padding: 10px;
+    gap: 6px;
+    border-radius: 14px;
   }
   .nav-item {
     flex-direction: column;
-    padding: 8px 12px;
-    font-size: 12px;
-    gap: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    gap: 5px;
   }
-  .nav-icon-wrap {
-    width: 28px;
-    height: 28px;
+  .nav-item::before {
+    display: none;
   }
   .nav-icon {
-    font-size: 16px;
+    font-size: 18px;
   }
   .nav-label {
-    font-size: 11px;
+    font-size: 12px;
   }
   .welcome-text {
     display: none;
+  }
+  .portal-topbar {
+    padding: 0 20px;
   }
 }
 </style>
