@@ -1,69 +1,154 @@
+/* ============================================================
+   DormManage — 温润学府 Design System
+   ============================================================ */
+
+/* ---------- Noise texture (shared) ---------- */
+@mixin noise-bg {
+  position: relative;
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+}
+
+/* ---------- Root tokens ---------- */
+:root {
+  /* Shared neutrals — warm undertone */
+  --neutral-50: #faf8f5;
+  --neutral-100: #f5f0eb;
+  --neutral-200: #e8e2da;
+  --neutral-300: #d4ccc2;
+  --neutral-400: #a8a098;
+  --neutral-500: #78716c;
+  --neutral-600: #57534e;
+  --neutral-700: #44403c;
+  --neutral-800: #292524;
+  --neutral-900: #1c1917;
+
+  /* Admin accent — deep indigo */
+  --admin-50: #eef2ff;
+  --admin-100: #e0e7ff;
+  --admin-200: #c7d2fe;
+  --admin-300: #a5b4fc;
+  --admin-400: #818cf8;
+  --admin-500: #6366f1;
+  --admin-600: #4f46e5;
+  --admin-700: #4338ca;
+  --admin-800: #3730a3;
+  --admin-900: #312e81;
+
+  /* Student accent — warm amber */
+  --student-50: #fffbeb;
+  --student-100: #fef3c7;
+  --student-200: #fde68a;
+  --student-300: #fcd34d;
+  --student-400: #fbbf24;
+  --student-500: #f59e0b;
+  --student-600: #d97706;
+  --student-700: #b45309;
+  --student-800: #92400e;
+  --student-900: #78350f;
+
+  /* Semantic */
+  --success: #059669;
+  --success-bg: #ecfdf5;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --info: #6366f1;
+  --info-bg: #eef2ff;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 12px 32px rgba(28, 25, 23, 0.08), 0 2px 6px rgba(28, 25, 23, 0.04);
+  --shadow-xl: 0 20px 48px rgba(28, 25, 23, 0.12), 0 4px 12px rgba(28, 25, 23, 0.06);
+  --shadow-glow-admin: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  --shadow-glow-student: 0 0 0 3px rgba(245, 158, 11, 0.12);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  /* Transitions */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+/* ---------- Reset & Base ---------- */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-:root {
-  --app-bg: #f0f4f8;
-  --card-radius: 12px;
-  --sidebar-width: 220px;
-  --header-height: 56px;
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-
-  --student-primary: #f97316;
-  --student-primary-light: #fb923c;
-  --student-primary-dark: #ea580c;
-  --student-bg: #fafaf9;
-  --student-card-shadow: 0 4px 24px rgba(249, 115, 22, 0.08);
-  --student-card-shadow-hover: 0 12px 40px rgba(249, 115, 22, 0.15);
-  --student-border: rgba(249, 115, 22, 0.1);
-
-  --admin-primary: #6366f1;
-  --admin-primary-light: #818cf8;
-  --admin-primary-dark: #4f46e5;
-  --admin-sidebar-bg: #1e1b4b;
-  --admin-card-border: #e2e8f0;
-  --admin-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  --admin-card-shadow-hover: 0 8px 24px rgba(99, 102, 241, 0.12);
-}
-
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'DM Sans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  color: var(--neutral-800);
+  background: var(--neutral-50);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb {
-  background: #c1c9d2;
+  background: var(--neutral-300);
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a0aab4;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
+::-webkit-scrollbar-thumb:hover { background: var(--neutral-400); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-300) transparent;
 }
 
-/* ========== 通用页面结构 ========== */
+/* ---------- Selection ---------- */
+::selection {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--admin-800);
+}
+
+/* ============================================================
+   Shared Page Structure
+   ============================================================ */
 .page-container {
-  padding: 24px;
+  padding: 28px;
   background: #fff;
-  border-radius: var(--card-radius);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-100);
+  transition: box-shadow var(--duration-normal) ease;
+}
+.page-container:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .page-header {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--neutral-100);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,9 +158,10 @@ body {
 
 .page-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
 }
 
 .pagination-wrap {
@@ -84,12 +170,9 @@ body {
   justify-content: flex-end;
 }
 
-.page-container .el-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* ========== 统计卡片通用 ========== */
+/* ============================================================
+   Stat Cards
+   ============================================================ */
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -98,37 +181,67 @@ body {
 }
 
 .stat-card {
-  padding: 20px;
-  border-radius: 12px;
+  padding: 22px 24px;
+  border-radius: var(--radius-lg);
   color: #fff;
   position: relative;
   overflow: hidden;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: default;
+  transition: transform var(--duration-normal) var(--ease-out-expo),
+              box-shadow var(--duration-normal) var(--ease-out-expo);
 }
 .stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 .stat-card .stat-icon {
   position: absolute;
-  right: 16px;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 48px;
-  opacity: 0.2;
+  font-size: 52px;
+  opacity: 0.15;
+  transition: all var(--duration-slow) var(--ease-out-expo);
+}
+.stat-card:hover .stat-icon {
+  opacity: 0.25;
+  transform: translateY(-50%) scale(1.1);
 }
 .stat-card .stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 .stat-card .stat-label {
   font-size: 13px;
-  opacity: 0.9;
-  margin-top: 4px;
+  opacity: 0.85;
+  margin-top: 6px;
+  font-weight: 500;
 }
 
-/* ========== 搜索栏通用 ========== */
+/* Staggered reveal animation for stat cards */
+@keyframes stat-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.stat-cards .stat-card {
+  animation: stat-reveal 0.5s var(--ease-out-expo) backwards;
+}
+.stat-cards .stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-cards .stat-card:nth-child(2) { animation-delay: 0.12s; }
+.stat-cards .stat-card:nth-child(3) { animation-delay: 0.19s; }
+.stat-cards .stat-card:nth-child(4) { animation-delay: 0.26s; }
+
+/* ============================================================
+   Search Bar
+   ============================================================ */
 .search-bar {
   display: flex;
   align-items: center;
@@ -136,15 +249,21 @@ body {
   gap: 12px;
   margin-bottom: 20px;
   padding: 16px 20px;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  background: var(--neutral-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--neutral-200);
+  transition: border-color var(--duration-fast) ease;
+}
+.search-bar:focus-within {
+  border-color: var(--neutral-300);
 }
 .search-bar .el-form-item {
   margin-bottom: 0 !important;
 }
 
-/* ========== 操作栏通用 ========== */
+/* ============================================================
+   Action Bar
+   ============================================================ */
 .action-bar {
   display: flex;
   align-items: center;
@@ -160,22 +279,38 @@ body {
   gap: 10px;
 }
 
-/* ========== 空状态 ========== */
+/* ============================================================
+   Empty State
+   ============================================================ */
 .empty-state {
-  padding: 60px 20px;
+  padding: 80px 20px;
   text-align: center;
 }
 .empty-state .empty-icon {
-  font-size: 64px;
-  color: #d1d5db;
-  margin-bottom: 16px;
+  font-size: 56px;
+  color: var(--neutral-200);
+  margin-bottom: 20px;
+  opacity: 0.6;
 }
 .empty-state .empty-text {
+  font-size: 15px;
+  color: var(--neutral-400);
+  font-weight: 500;
+}
+.empty-state p {
+  font-size: 18px;
+  color: var(--neutral-500);
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.empty-state span {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--neutral-400);
 }
 
-/* ========== 状态徽章 ========== */
+/* ============================================================
+   Status Badges
+   ============================================================ */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -183,98 +318,233 @@ body {
   padding: 5px 14px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 .status-badge .dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 .status-badge.success {
-  background: #f0fdf4;
-  color: #16a34a;
+  background: var(--success-bg);
+  color: var(--success);
 }
-.status-badge.success .dot {
-  background: #16a34a;
-}
+.status-badge.success .dot { background: var(--success); }
 .status-badge.warning {
-  background: #fffbeb;
-  color: #d97706;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
-.status-badge.warning .dot {
-  background: #d97706;
-}
+.status-badge.warning .dot { background: var(--warning); }
 .status-badge.danger {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
-.status-badge.danger .dot {
-  background: #dc2626;
-}
+.status-badge.danger .dot { background: var(--danger); }
 .status-badge.info {
-  background: #fff7ed;
-  color: #ea580c;
+  background: var(--student-50);
+  color: var(--student-600);
 }
-.status-badge.info .dot {
-  background: #ea580c;
-}
+.status-badge.info .dot { background: var(--student-600); }
 .status-badge.primary {
-  background: #eef2ff;
-  color: #6366f1;
+  background: var(--admin-50);
+  color: var(--admin-600);
 }
-.status-badge.primary .dot {
-  background: #6366f1;
+.status-badge.primary .dot { background: var(--admin-600); }
+
+/* ============================================================
+   Global Table Refinements
+   ============================================================ */
+.page-container .el-table {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  --el-table-border-color: var(--neutral-100);
+  --el-table-header-bg-color: var(--neutral-50);
+}
+.page-container .el-table th.el-table__cell {
+  font-weight: 600;
+  color: var(--neutral-600);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.page-container .el-table .el-table__row {
+  transition: background var(--duration-fast) ease;
+}
+.page-container .el-table .el-table__row:hover > td {
+  background: var(--neutral-50) !important;
 }
 
-/* ========== 学生端门户样式 ========== */
+/* ============================================================
+   Dialog Refinements
+   ============================================================ */
+.el-dialog {
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl) !important;
+}
+.el-dialog__header {
+  padding: 22px 28px 18px !important;
+  border-bottom: 1px solid var(--neutral-100);
+}
+.el-dialog__title {
+  font-weight: 700 !important;
+  font-size: 17px !important;
+  color: var(--neutral-900);
+}
+.el-dialog__body {
+  padding: 28px !important;
+}
+.el-dialog__footer {
+  padding: 18px 28px 22px !important;
+  border-top: 1px solid var(--neutral-100);
+}
+
+/* ---------- Admin dialog header ---------- */
+.admin-dashboard .el-dialog__header {
+  background: linear-gradient(135deg, var(--admin-600), var(--admin-700));
+  color: #fff;
+  border-bottom: none;
+}
+.admin-dashboard .el-dialog__title {
+  color: #fff !important;
+}
+.admin-dashboard .el-dialog__headerbtn .el-dialog__close {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.admin-dashboard .el-dialog__headerbtn:hover .el-dialog__close {
+  color: #fff !important;
+}
+
+/* ---------- Student dialog header ---------- */
+.student-portal .el-dialog__header {
+  background: linear-gradient(135deg, var(--student-500), var(--student-600));
+  color: #fff;
+  border-bottom: none;
+}
+.student-portal .el-dialog__title {
+  color: #fff !important;
+}
+.student-portal .el-dialog__headerbtn .el-dialog__close {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.student-portal .el-dialog__headerbtn:hover .el-dialog__close {
+  color: #fff !important;
+}
+
+/* ============================================================
+   Admin Portal Overrides
+   ============================================================ */
+.admin-dashboard .main .page-container {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-100);
+  padding: 28px;
+}
+.admin-dashboard .main .page-header {
+  border-bottom: 1px solid var(--neutral-100);
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+.admin-dashboard .main .page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
+}
+.admin-dashboard .main .el-table {
+  --el-table-header-bg-color: var(--neutral-50);
+  --el-table-row-hover-bg-color: var(--admin-50);
+  --el-table-border-color: var(--neutral-100);
+}
+.admin-dashboard .main .el-table .el-table__row:hover > td {
+  background: var(--admin-50) !important;
+}
+.admin-dashboard .main .el-button--primary {
+  --el-button-bg-color: var(--admin-500);
+  --el-button-border-color: var(--admin-500);
+  --el-button-hover-bg-color: var(--admin-600);
+  --el-button-hover-border-color: var(--admin-600);
+  --el-button-active-bg-color: var(--admin-700);
+  --el-button-active-border-color: var(--admin-700);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-sm);
+}
+.admin-dashboard .main .el-pagination .el-pager li.is-active {
+  background: linear-gradient(135deg, var(--admin-500), var(--admin-600));
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+.admin-dashboard .main .search-bar {
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
+  border-radius: var(--radius-md);
+}
+.admin-dashboard .main .stat-card {
+  border-radius: var(--radius-lg);
+}
+
+/* ============================================================
+   Student Portal Overrides
+   ============================================================ */
 .student-portal .main-content .page-container {
   background: #fff;
-  border-radius: 18px;
-  box-shadow: var(--student-card-shadow);
-  border: 1px solid var(--student-border);
-  padding: 40px;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--student-100);
+  padding: 36px;
 }
 .student-portal .main-content .page-header {
-  border-bottom-color: rgba(249, 115, 22, 0.12);
-  padding-bottom: 22px;
+  border-bottom-color: var(--student-100);
+  padding-bottom: 20px;
   margin-bottom: 28px;
 }
 .student-portal .main-content .page-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
 }
 .student-portal .main-content .el-table {
-  --el-table-border-color: var(--student-border);
-  --el-table-header-bg-color: #fafaf9;
-  --el-table-row-hover-bg-color: #fff7ed;
+  --el-table-border-color: var(--student-100);
+  --el-table-header-bg-color: var(--student-50);
+  --el-table-row-hover-bg-color: var(--student-50);
   font-size: 15px;
 }
 .student-portal .main-content .el-table th {
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .student-portal .main-content .el-button--primary {
-  --el-button-bg-color: #f97316;
-  --el-button-border-color: #f97316;
-  --el-button-hover-bg-color: #ea580c;
-  --el-button-hover-border-color: #ea580c;
-  --el-button-size: 36px;
+  --el-button-bg-color: var(--student-500);
+  --el-button-border-color: var(--student-500);
+  --el-button-hover-bg-color: var(--student-600);
+  --el-button-hover-border-color: var(--student-600);
+  --el-button-active-bg-color: var(--student-700);
+  --el-button-active-border-color: var(--student-700);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-sm);
 }
 .student-portal .main-content .el-pagination .el-pager li.is-active {
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, var(--student-500), var(--student-600));
+  border-radius: var(--radius-sm);
+  font-weight: 600;
 }
 .student-portal .main-content .stat-card {
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
 }
 .student-portal .main-content .search-bar {
-  background: #fff7ed;
-  border-color: var(--student-border);
-  border-radius: 16px;
+  background: var(--student-50);
+  border-color: var(--student-100);
+  border-radius: var(--radius-lg);
   padding: 20px 24px;
   font-size: 15px;
 }
 .student-portal .main-content .el-button {
-  --el-button-size: 36px;
   font-size: 15px;
 }
 .student-portal .main-content .el-input__inner {
@@ -287,101 +557,9 @@ body {
   font-size: 15px;
 }
 
-/* ========== 管理端后台样式 ========== */
-.admin-dashboard .main .page-container {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: var(--admin-card-shadow);
-  border: 1px solid var(--admin-card-border);
-  padding: 24px;
-}
-.admin-dashboard .main .page-header {
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 14px;
-  margin-bottom: 20px;
-}
-.admin-dashboard .main .page-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e1b4b;
-}
-.admin-dashboard .main .el-table {
-  --el-table-header-bg-color: #f8fafc;
-  --el-table-row-hover-bg-color: #faf5ff;
-  --el-table-border-color: #e2e8f0;
-}
-.admin-dashboard .main .el-table .el-table__row:hover > td {
-  background: #faf5ff !important;
-}
-.admin-dashboard .main .el-button--primary {
-  --el-button-bg-color: #6366f1;
-  --el-button-border-color: #6366f1;
-  --el-button-hover-bg-color: #4f46e5;
-  --el-button-hover-border-color: #4f46e5;
-}
-.admin-dashboard .main .el-pagination .el-pager li.is-active {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-}
-.admin-dashboard .main .search-bar {
-  background: #f8fafc;
-  border-color: #e2e8f0;
-}
-.admin-dashboard .main .stat-card {
-  border-radius: 12px;
-}
-
-/* ========== 弹窗美化 ========== */
-.el-dialog {
-  border-radius: 16px !important;
-  overflow: hidden;
-}
-.el-dialog__header {
-  padding: 20px 24px 16px !important;
-  border-bottom: 1px solid #f1f5f9;
-}
-.el-dialog__title {
-  font-weight: 600 !important;
-  font-size: 16px !important;
-}
-.el-dialog__body {
-  padding: 24px !important;
-}
-.el-dialog__footer {
-  padding: 16px 24px 20px !important;
-  border-top: 1px solid #f1f5f9;
-}
-
-.admin-dashboard .el-dialog__header {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: #fff;
-  border-bottom: none;
-}
-.admin-dashboard .el-dialog__title {
-  color: #fff !important;
-}
-.admin-dashboard .el-dialog__headerbtn .el-dialog__close {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-.admin-dashboard .el-dialog__headerbtn:hover .el-dialog__close {
-  color: #fff !important;
-}
-
-.student-portal .el-dialog__header {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #fff;
-  border-bottom: none;
-}
-.student-portal .el-dialog__title {
-  color: #fff !important;
-}
-.student-portal .el-dialog__headerbtn .el-dialog__close {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-.student-portal .el-dialog__headerbtn:hover .el-dialog__close {
-  color: #fff !important;
-}
-
-/* ========== 响应式 ========== */
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 1200px) {
   .stat-cards {
     grid-template-columns: repeat(2, 1fr);
@@ -394,5 +572,8 @@ body {
   .search-bar {
     flex-direction: column;
     align-items: stretch;
+  }
+  .page-container {
+    padding: 20px;
   }
 }

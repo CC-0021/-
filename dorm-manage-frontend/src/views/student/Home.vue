@@ -1,12 +1,16 @@
 <template>
   <div class="home-page">
+    <!-- Welcome banner -->
     <div class="welcome-card">
-      <div class="welcome-shape shape-1" />
-      <div class="welcome-shape shape-2" />
+      <div class="welcome-shapes">
+        <div class="wshape wshape-1" />
+        <div class="wshape wshape-2" />
+        <div class="wshape wshape-3" />
+      </div>
       <div class="welcome-content">
         <div class="welcome-text">
-          <h2>你好，{{ userStore.displayName }} <span class="wave">👋</span></h2>
-          <p>欢迎使用学生公寓服务系统，祝你生活愉快！</p>
+          <h2>你好，{{ userStore.displayName }}<span class="wave">👋</span></h2>
+          <p>欢迎使用学生公寓服务系统，愿你在宿舍感受到家的温暖</p>
         </div>
         <div class="welcome-date">
           <span class="date-day">{{ day }}</span>
@@ -15,60 +19,45 @@
       </div>
     </div>
 
+    <!-- Quick actions -->
     <div class="quick-cards">
-      <div class="quick-card" @click="router.push('/repair/submit')">
-        <div class="quick-icon" style="background: #f97316">
-          <el-icon :size="26"><Tools /></el-icon>
+      <div
+        v-for="(card, i) in quickCards"
+        :key="i"
+        class="quick-card"
+        @click="router.push(card.path)"
+        :style="{ animationDelay: `${0.1 + i * 0.07}s` }"
+      >
+        <div class="quick-icon" :style="{ background: card.gradient }">
+          <el-icon :size="24"><component :is="card.icon" /></el-icon>
         </div>
         <div class="quick-info">
-          <h4>提交报修</h4>
-          <p>宿舍设施报修</p>
-        </div>
-        <el-icon class="quick-arrow"><ArrowRight /></el-icon>
-      </div>
-      <div class="quick-card" @click="router.push('/checkin')">
-        <div class="quick-icon" style="background: #10b981">
-          <el-icon :size="26"><Calendar /></el-icon>
-        </div>
-        <div class="quick-info">
-          <h4>入住登记</h4>
-          <p>申请宿舍入住</p>
-        </div>
-        <el-icon class="quick-arrow"><ArrowRight /></el-icon>
-      </div>
-      <div class="quick-card" @click="router.push('/message')">
-        <div class="quick-icon" style="background: #8b5cf6">
-          <el-icon :size="26"><ChatDotRound /></el-icon>
-        </div>
-        <div class="quick-info">
-          <h4>留言反馈</h4>
-          <p>意见与建议</p>
-        </div>
-        <el-icon class="quick-arrow"><ArrowRight /></el-icon>
-      </div>
-      <div class="quick-card" @click="router.push('/dorm-application')">
-        <div class="quick-icon" style="background: #f59e0b">
-          <el-icon :size="26"><Document /></el-icon>
-        </div>
-        <div class="quick-info">
-          <h4>宿舍申请</h4>
-          <p>换宿/退宿申请</p>
+          <h4>{{ card.title }}</h4>
+          <p>{{ card.desc }}</p>
         </div>
         <el-icon class="quick-arrow"><ArrowRight /></el-icon>
       </div>
     </div>
 
+    <!-- Info grid: Announcements + Repairs -->
     <div class="info-grid">
+      <!-- Latest announcements -->
       <div class="info-card">
         <div class="info-card-header">
           <h3>
-            <el-icon class="header-dot"><Notification /></el-icon>
+            <el-icon class="header-icon"><Notification /></el-icon>
             最新公告
           </h3>
           <el-button type="primary" link @click="router.push('/announcement')">更多 →</el-button>
         </div>
         <div class="announcement-list">
-          <div v-for="item in announcements" :key="item.id" class="announcement-item" @click="router.push('/announcement/' + item.id)">
+          <div
+            v-for="(item, i) in announcements"
+            :key="item.id"
+            class="announcement-item"
+            @click="router.push('/announcement/' + item.id)"
+            :style="{ animationDelay: `${0.1 * i}s` }"
+          >
             <div class="ann-left">
               <el-tag v-if="item.isTop === 1" size="small" type="danger" class="top-tag">置顶</el-tag>
               <span class="ann-title">{{ item.title }}</span>
@@ -79,16 +68,23 @@
         </div>
       </div>
 
+      <!-- My repairs -->
       <div class="info-card">
         <div class="info-card-header">
           <h3>
-            <el-icon class="header-dot"><Tools /></el-icon>
+            <el-icon class="header-icon"><Tools /></el-icon>
             我的报修
           </h3>
           <el-button type="primary" link @click="router.push('/repair')">更多 →</el-button>
         </div>
         <div class="repair-list">
-          <div v-for="item in repairs" :key="item.id" class="repair-item" @click="router.push('/repair/detail/' + item.id)">
+          <div
+            v-for="(item, i) in repairs"
+            :key="item.id"
+            class="repair-item"
+            @click="router.push('/repair/detail/' + item.id)"
+            :style="{ animationDelay: `${0.1 * i}s` }"
+          >
             <div class="repair-left">
               <span class="status-badge" :class="repairStatusClass(item.status)">
                 <span class="dot" />
@@ -120,6 +116,13 @@ const userStore = useUserStore()
 
 const announcements = ref([])
 const repairs = ref([])
+
+const quickCards = [
+  { title: '提交报修', desc: '宿舍设施报修', icon: Tools, path: '/repair/submit', gradient: 'linear-gradient(135deg, #f97316, #ea580c)' },
+  { title: '入住登记', desc: '申请宿舍入住', icon: Calendar, path: '/checkin', gradient: 'linear-gradient(135deg, #10b981, #059669)' },
+  { title: '留言反馈', desc: '意见与建议', icon: ChatDotRound, path: '/message', gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' },
+  { title: '宿舍申请', desc: '换宿/退宿申请', icon: Document, path: '/dorm-application', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' }
+]
 
 const repairStatusText = (s) => ['待处理', '处理中', '已完成', '已撤销'][s] || ''
 const repairStatusClass = (s) => ({ 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' })[s] || 'info'
@@ -153,45 +156,53 @@ onMounted(() => {
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
+/* ========== Welcome card ========== */
 .welcome-card {
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   overflow: hidden;
   position: relative;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 40%, #c2410c 100%);
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 35%, #9a3412 100%);
   color: #fff;
-  box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 12px 40px rgba(249, 115, 22, 0.25);
 }
-.welcome-shape {
+.welcome-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.wshape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
-.shape-1 {
-  width: 360px;
-  height: 360px;
-  top: -120px;
-  right: -80px;
+.wshape-1 {
+  width: 380px; height: 380px;
+  top: -140px; right: -60px;
 }
-.shape-2 {
-  width: 180px;
-  height: 180px;
-  bottom: -40px;
-  right: 200px;
+.wshape-2 {
+  width: 200px; height: 200px;
+  bottom: -60px; right: 220px;
+}
+.wshape-3 {
+  width: 140px; height: 140px;
+  top: 30%; left: -40px;
 }
 .welcome-content {
   position: relative;
-  padding: 48px 56px;
+  padding: 44px 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .welcome-text h2 {
   margin: 0 0 10px;
+  font-family: 'Noto Serif SC', serif;
   font-size: 34px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 .welcome-text h2 .wave {
   display: inline-block;
@@ -200,138 +211,159 @@ onMounted(() => {
 }
 @keyframes wave {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(20deg); }
-  75% { transform: rotate(-10deg); }
+  25% { transform: rotate(18deg); }
+  75% { transform: rotate(-8deg); }
 }
 .welcome-text p {
   margin: 0;
-  font-size: 17px;
-  opacity: 0.85;
+  font-size: 16px;
+  opacity: 0.8;
+  font-weight: 400;
+  max-width: 380px;
+  line-height: 1.5;
 }
 .welcome-date {
   text-align: center;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 20px 36px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 18px 32px;
   backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .date-day {
   display: block;
+  font-family: 'DM Sans', sans-serif;
   font-size: 48px;
   font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 .date-weekday {
   display: block;
-  font-size: 15px;
-  opacity: 0.85;
+  font-size: 14px;
+  opacity: 0.8;
   margin-top: 6px;
+  font-weight: 500;
 }
 
+/* ========== Quick cards ========== */
 .quick-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 .quick-card {
   background: #fff;
-  border-radius: 18px;
-  padding: 28px 24px;
+  border-radius: var(--radius-xl);
+  padding: 26px 22px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   cursor: pointer;
-  border: 1px solid #f0efed;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.25s ease;
+  border: 1px solid var(--neutral-200);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: card-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@keyframes card-reveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .quick-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
-  border-color: #e7e5e4;
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(28, 25, 23, 0.1);
+  border-color: var(--student-300);
 }
 .quick-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.quick-card:hover .quick-icon {
+  transform: scale(1.1);
 }
 .quick-info h4 {
-  margin: 0 0 6px;
-  font-size: 17px;
-  font-weight: 600;
-  color: #1c1917;
+  margin: 0 0 5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--neutral-900);
 }
 .quick-info p {
   margin: 0;
-  font-size: 14px;
-  color: #a8a29e;
+  font-size: 13px;
+  color: var(--neutral-400);
 }
 .quick-arrow {
   margin-left: auto;
-  color: #d6d3d1;
+  color: var(--neutral-300);
   font-size: 20px;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
 }
 .quick-card:hover .quick-arrow {
-  color: #f97316;
-  transform: translateX(5px);
+  color: var(--student-500);
+  transform: translateX(6px);
 }
 
+/* ========== Info grid ========== */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  gap: 24px;
 }
 .info-card {
   background: #fff;
-  border-radius: 18px;
-  padding: 36px;
-  border: 1px solid #f0efed;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  border: 1px solid var(--neutral-200);
+  box-shadow: var(--shadow-xs);
 }
 .info-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 .info-card-header h3 {
   margin: 0;
+  font-family: 'Noto Serif SC', serif;
   font-size: 18px;
-  font-weight: 600;
-  color: #1c1917;
+  font-weight: 700;
+  color: var(--neutral-900);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.header-dot {
-  color: #f97316;
+.header-icon {
+  color: var(--student-500);
   font-size: 20px;
 }
 
-.announcement-list {
-  display: flex;
-  flex-direction: column;
-}
+/* Announcements */
 .announcement-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 0;
-  border-bottom: 1px solid #f5f5f4;
+  border-bottom: 1px solid var(--neutral-100);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  animation: item-reveal 0.3s ease backwards;
+}
+@keyframes item-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .announcement-item:last-child {
   border-bottom: none;
 }
 .announcement-item:hover .ann-title {
-  color: #f97316;
+  color: var(--student-500);
 }
 .ann-left {
   display: flex;
@@ -342,43 +374,42 @@ onMounted(() => {
 }
 .ann-title {
   font-size: 15px;
-  color: #44403c;
+  color: var(--neutral-700);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.2s;
+  font-weight: 500;
 }
 .top-tag {
   flex-shrink: 0;
 }
 .ann-time {
   font-size: 13px;
-  color: #a8a29e;
+  color: var(--neutral-400);
   white-space: nowrap;
-  margin-left: 18px;
+  margin-left: 16px;
 }
 
-.repair-list {
-  display: flex;
-  flex-direction: column;
-}
+/* Repairs */
 .repair-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 0;
-  border-bottom: 1px solid #f5f5f4;
+  border-bottom: 1px solid var(--neutral-100);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  animation: item-reveal 0.3s ease backwards;
 }
 .repair-item:last-child {
   border-bottom: none;
 }
 .repair-item:hover {
-  background: #fafaf9;
-  margin: 0 -10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  background: var(--student-50);
+  margin: 0 -12px;
+  padding-left: 12px;
+  padding-right: 12px;
   border-radius: 8px;
 }
 .repair-left {
@@ -388,24 +419,26 @@ onMounted(() => {
 }
 .repair-type {
   font-size: 15px;
-  color: #44403c;
+  color: var(--neutral-700);
+  font-weight: 500;
 }
 .repair-room {
   font-size: 14px;
-  color: #78716c;
+  color: var(--neutral-500);
 }
 
 .empty-hint {
   text-align: center;
-  padding: 24px 0;
-  color: #a8a29e;
-  font-size: 13px;
+  padding: 32px 0;
+  color: var(--neutral-400);
+  font-size: 14px;
 }
 
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .quick-cards {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 14px;
   }
   .info-grid {
     grid-template-columns: 1fr;
@@ -415,16 +448,14 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
-    padding: 32px 28px;
+    padding: 32px 24px;
   }
   .welcome-date {
     align-self: flex-end;
+    padding: 14px 24px;
   }
   .welcome-text h2 {
     font-size: 26px;
-  }
-  .welcome-date {
-    padding: 14px 24px;
   }
   .date-day {
     font-size: 36px;
@@ -433,11 +464,14 @@ onMounted(() => {
     padding: 24px;
   }
   .quick-card {
-    padding: 20px;
+    padding: 18px;
   }
   .quick-icon {
     width: 48px;
     height: 48px;
+  }
+  .quick-info h4 {
+    font-size: 14px;
   }
 }
 </style>

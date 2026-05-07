@@ -66,6 +66,10 @@
         WHERE id = #{id}
     </update>
 
+    <select id="countAvailableBeds" resultType="int">
+        SELECT COUNT(*) FROM t_bed WHERE status = 0
+    </select>
+
     <delete id="deleteById">
         DELETE FROM t_dormitory WHERE id = #{id}
     </delete>

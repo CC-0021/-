@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 宿舍违规管理服务
@@ -24,10 +25,10 @@ public class ViolationService {
     /**
      * 分页查询违规记录
      */
-    public PageResult<Violation> page(int pageNum, int pageSize, String studentId, String roomNo) {
-        long total = violationMapper.countPage(studentId, roomNo);
+    public PageResult<Violation> page(int pageNum, int pageSize, String studentId, String roomNo, String handleStatus) {
+        long total = violationMapper.countPage(studentId, roomNo, handleStatus);
         int offset = (pageNum - 1) * pageSize;
-        List<Violation> list = violationMapper.selectPage(studentId, roomNo, offset, pageSize);
+        List<Violation> list = violationMapper.selectPage(studentId, roomNo, handleStatus, offset, pageSize);
         return new PageResult<>(total, list);
     }
 
@@ -72,9 +73,20 @@ public class ViolationService {
     }
 
     /**
-     * 学生端：查询自己的违规记录
+     * 学生端：查询自己的违规记录（支持按状态筛选）
      */
-    public List<Violation> myList(String username) {
-        return violationMapper.selectByStudentId(username);
+    public List<Violation> myList(String username, String status) {
+        List<Violation> list = violationMapper.selectByStudentId(username);
+        if ("pending".equals(status)) {
+            return list.stream()
+                    .filter(v -> v.getHandleResult() == null || v.getHandleResult().isEmpty())
+                    .collect(Collectors.toList());
+        }
+        if ("handled".equals(status)) {
+            return list.stream()
+                    .filter(v -> v.getHandleResult() != null && !v.getHandleResult().isEmpty())
+                    .collect(Collectors.toList());
+        }
+        return list;
     }
 }

@@ -7,7 +7,9 @@ import com.dorm.manage.mapper.DormitoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 宿舍管理服务
@@ -88,6 +90,18 @@ public class DormitoryService {
      */
     public void delete(Long id) {
         dormitoryMapper.deleteById(id);
+    }
+
+    /**
+     * 统计：宿舍总数 + 空闲床位总数
+     */
+    public Map<String, Object> getStats() {
+        long dormitoryCount = dormitoryMapper.countPage(null, null, null);
+        int bedAvailable = dormitoryMapper.countAvailableBeds();
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("dormitoryCount", dormitoryCount);
+        stats.put("bedAvailable", bedAvailable);
+        return stats;
     }
 
     /**

@@ -1,68 +1,39 @@
 <template>
   <div class="admin-dashboard">
     <el-container class="layout">
-      <el-aside :width="isCollapsed ? '64px' : '240px'" class="aside">
+      <!-- Sidebar -->
+      <el-aside :width="isCollapsed ? '68px' : '248px'" class="aside">
+        <!-- Logo -->
         <div class="logo" :class="{ collapsed: isCollapsed }">
-          <span class="logo-icon">
-            <el-icon :size="22"><Setting /></el-icon>
-          </span>
+          <div class="logo-mark">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="8" width="24" height="20" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+              <path d="M4 13L16 5L28 13" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="12" y="18" width="8" height="10" rx="2" fill="rgba(129,140,248,0.3)" stroke="rgba(129,140,248,0.5)" stroke-width="1"/>
+            </svg>
+          </div>
           <span v-show="!isCollapsed" class="logo-text">管理后台</span>
         </div>
+
         <div class="aside-divider" />
+
+        <!-- Menu -->
         <el-menu
           :default-active="activeMenu"
           :collapse="isCollapsed"
           router
           class="sidebar-menu"
           background-color="transparent"
-          text-color="#a5b4fc"
-          active-text-color="#e0e7ff"
+          text-color="rgba(255,255,255,0.55)"
+          active-text-color="#ffffff"
         >
-          <el-menu-item index="/admin/dashboard">
-            <el-icon><DataAnalysis /></el-icon>
-            <span>数据概览</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/announcement">
-            <el-icon><Notification /></el-icon>
-            <span>公告管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/repair">
-            <el-icon><Tools /></el-icon>
-            <span>报修管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/checkin">
-            <el-icon><Calendar /></el-icon>
-            <span>入住审核</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/message">
-            <el-icon><ChatDotRound /></el-icon>
-            <span>留言回复</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/dorm-application">
-            <el-icon><Document /></el-icon>
-            <span>宿舍申请</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/dormitory">
-            <el-icon><OfficeBuilding /></el-icon>
-            <span>宿舍管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/bed">
-            <el-icon><FirstAidKit /></el-icon>
-            <span>床位管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/employee">
-            <el-icon><UserFilled /></el-icon>
-            <span>员工管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/violation">
-            <el-icon><Warning /></el-icon>
-            <span>违规管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/visitor">
-            <el-icon><Tickets /></el-icon>
-            <span>来访登记</span>
+          <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
+            <el-icon><component :is="item.icon" /></el-icon>
+            <span>{{ item.label }}</span>
           </el-menu-item>
         </el-menu>
+
+        <!-- Collapse toggle -->
         <div class="collapse-btn" @click="isCollapsed = !isCollapsed">
           <el-icon :size="18">
             <Fold v-if="!isCollapsed" />
@@ -71,7 +42,9 @@
         </div>
       </el-aside>
 
+      <!-- Main area -->
       <el-container class="main-wrap">
+        <!-- Header -->
         <el-header class="header">
           <div class="header-left">
             <el-breadcrumb separator="/" class="breadcrumb">
@@ -80,9 +53,36 @@
             </el-breadcrumb>
           </div>
           <div class="header-right">
-            <el-badge :value="3" :max="99" class="notify-badge">
-              <el-icon :size="20" class="notify-icon"><Bell /></el-icon>
-            </el-badge>
+            <!-- Notifications -->
+            <el-popover trigger="click" :width="340" placement="bottom-end" popper-class="notify-popover">
+              <template #reference>
+                <el-badge :value="notifyCount" :max="99" :hidden="notifyCount === 0" class="notify-badge">
+                  <div class="notify-btn">
+                    <el-icon :size="19"><Bell /></el-icon>
+                  </div>
+                </el-badge>
+              </template>
+              <div class="notify-panel">
+                <div class="notify-title">待办事宜</div>
+                <div v-if="notifyCount === 0" class="notify-empty">暂无待办事项</div>
+                <div v-else class="notify-list">
+                  <div
+                    v-for="item in pendingItems"
+                    :key="item.key"
+                    class="notify-item"
+                    @click="router.push(item.path)"
+                  >
+                    <div class="notify-item-left">
+                      <el-icon :size="15"><component :is="item.icon" /></el-icon>
+                      <span>{{ item.label }}</span>
+                    </div>
+                    <el-tag size="small" type="danger" round>{{ item.count }}</el-tag>
+                  </div>
+                </div>
+              </div>
+            </el-popover>
+
+            <!-- User -->
             <el-dropdown trigger="click" @command="handleCommand">
               <div class="user-info">
                 <div class="user-avatar">
@@ -103,17 +103,20 @@
           </div>
         </el-header>
 
+        <!-- Content -->
         <el-main class="main">
           <div class="main-inner">
             <router-view v-slot="{ Component }">
-              <transition name="slide-left" mode="out-in">
+              <transition name="page-fade" mode="out-in">
                 <component :is="Component" />
               </transition>
             </router-view>
           </div>
-          <div class="back-top" v-show="showBackTop" @click="scrollToTop">
-            <el-icon :size="20"><Top /></el-icon>
-          </div>
+          <transition name="back-top-fade">
+            <div class="back-top" v-show="showBackTop" @click="scrollToTop">
+              <el-icon :size="20"><Top /></el-icon>
+            </div>
+          </transition>
         </el-main>
       </el-container>
     </el-container>
@@ -129,15 +132,57 @@ import {
   Tickets, Fold, Expand, Bell, SwitchButton, DataAnalysis, Top
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { adminPage as repairPage } from '@/api/repair'
+import { adminPage as checkinPage } from '@/api/checkin'
+import { adminPage as dormAppPage } from '@/api/dormApplication'
+import { adminPage as messagePage } from '@/api/message'
+import violationApi from '@/api/violation'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const isCollapsed = ref(false)
 const showBackTop = ref(false)
+const notifyCount = ref(0)
+const pendingItems = ref([])
+
+const menuItems = [
+  { path: '/admin/dashboard', label: '数据概览', icon: DataAnalysis },
+  { path: '/admin/announcement', label: '公告管理', icon: Notification },
+  { path: '/admin/repair', label: '报修管理', icon: Tools },
+  { path: '/admin/checkin', label: '入住审核', icon: Calendar },
+  { path: '/admin/message', label: '留言回复', icon: ChatDotRound },
+  { path: '/admin/dorm-application', label: '宿舍申请', icon: Document },
+  { path: '/admin/dormitory', label: '宿舍管理', icon: OfficeBuilding },
+  { path: '/admin/bed', label: '床位管理', icon: FirstAidKit },
+  { path: '/admin/employee', label: '员工管理', icon: UserFilled },
+  { path: '/admin/violation', label: '违规管理', icon: Warning },
+  { path: '/admin/visitor', label: '来访登记', icon: Tickets }
+]
 
 const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => route.meta.title || '管理')
+
+async function loadNotifyCount() {
+  const results = await Promise.allSettled([
+    repairPage({ pageNum: 1, pageSize: 1, status: 0 }),
+    checkinPage({ pageNum: 1, pageSize: 1, status: 0 }),
+    dormAppPage({ pageNum: 1, pageSize: 1, status: 0 }),
+    messagePage({ pageNum: 1, pageSize: 1, status: 0 }),
+    violationApi.page({ pageNum: 1, pageSize: 1, handleStatus: 'pending' })
+  ])
+  const counts = results.map(r => r.status === 'fulfilled' ? (r.value.data?.total || 0) : 0)
+  notifyCount.value = counts.reduce((a, b) => a + b, 0)
+
+  const defs = [
+    { key: 'repair', label: '报修待处理', path: '/admin/repair', icon: 'Tools', count: counts[0] },
+    { key: 'checkin', label: '入住待审核', path: '/admin/checkin', icon: 'Calendar', count: counts[1] },
+    { key: 'dormApp', label: '宿舍申请待审核', path: '/admin/dorm-application', icon: 'Document', count: counts[2] },
+    { key: 'message', label: '留言待回复', path: '/admin/message', icon: 'ChatDotRound', count: counts[3] },
+    { key: 'violation', label: '违规待处理', path: '/admin/violation', icon: 'Warning', count: counts[4] }
+  ]
+  pendingItems.value = defs.filter(d => d.count > 0)
+}
 
 function handleCommand(cmd) {
   if (cmd === 'logout') {
@@ -147,7 +192,7 @@ function handleCommand(cmd) {
 }
 
 function handleScroll() {
-  showBackTop.value = document.querySelector('.main')?.scrollTop > 200
+  showBackTop.value = document.querySelector('.main')?.scrollTop > 300
 }
 
 function scrollToTop() {
@@ -156,6 +201,7 @@ function scrollToTop() {
 
 onMounted(() => {
   document.querySelector('.main')?.addEventListener('scroll', handleScroll)
+  loadNotifyCount()
 })
 onUnmounted(() => {
   document.querySelector('.main')?.removeEventListener('scroll', handleScroll)
@@ -165,157 +211,209 @@ onUnmounted(() => {
 <style scoped>
 .admin-dashboard {
   min-height: 100vh;
-  background: #f1f5f9;
-  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  background: var(--neutral-50);
+  font-family: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
 }
 .layout {
   min-height: 100vh;
 }
 
+/* ========== Sidebar ========== */
 .aside {
-  background: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(180deg, #1a1744 0%, #1e1b4b 30%, #312e81 70%, #1e1b4b 100%);
+  box-shadow: 6px 0 32px rgba(0, 0, 0, 0.2);
   position: relative;
-  transition: width 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* Sidebar subtle glow line on right edge */
+.aside::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(129, 140, 248, 0.3) 15%,
+    rgba(129, 140, 248, 0.5) 50%,
+    rgba(129, 140, 248, 0.3) 85%,
+    transparent 100%);
+  opacity: 0.6;
+}
+
 .logo {
-  height: 64px;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   padding: 0 20px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
+  cursor: default;
 }
 .logo.collapsed {
   padding: 0;
 }
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(139, 92, 246, 0.4);
-  color: #e0e7ff;
-  display: inline-flex;
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(129, 140, 248, 0.25);
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.logo-mark svg {
+  width: 22px;
+  height: 22px;
 }
 .logo-text {
-  color: #e0e7ff;
-  font-size: 17px;
+  color: #e8eaf6;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
 }
 .aside-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
-  margin: 0 16px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 0 18px;
   flex-shrink: 0;
 }
+
+/* Menu */
 .sidebar-menu {
   border: none;
-  padding: 16px 0;
+  padding: 12px 0;
   flex: 1;
   overflow-y: auto;
 }
 .sidebar-menu .el-menu-item {
-  margin: 2px 12px;
+  margin: 2px 10px;
   border-radius: 10px;
-  height: 46px;
-  line-height: 46px;
+  height: 44px;
+  line-height: 44px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  position: relative;
 }
 .sidebar-menu .el-menu-item:hover {
-  background: rgba(139, 92, 246, 0.2) !important;
-  color: #c4b5fd !important;
+  background: rgba(129, 140, 248, 0.15) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 .sidebar-menu .el-menu-item.is-active {
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.35), rgba(139, 92, 246, 0.15)) !important;
-  color: #e0e7ff !important;
+  background: linear-gradient(90deg, rgba(129, 140, 248, 0.3), rgba(129, 140, 248, 0.1)) !important;
+  color: #ffffff !important;
   font-weight: 600;
+  box-shadow: inset 3px 0 0 rgba(165, 180, 252, 0.8);
 }
+
+/* Collapse button */
 .collapse-btn {
-  height: 48px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #a5b4fc;
+  color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 .collapse-btn:hover {
-  color: #e0e7ff;
-  background: rgba(139, 92, 246, 0.2);
+  color: #c7d2fe;
+  background: rgba(129, 140, 248, 0.12);
 }
 
+/* ========== Header ========== */
 .main-wrap {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 .header {
-  height: 60px;
+  height: 62px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--neutral-100);
+  flex-shrink: 0;
 }
 .breadcrumb {
   font-size: 14px;
 }
 .breadcrumb :deep(.el-breadcrumb__inner) {
-  color: #64748b;
+  color: var(--neutral-400);
   font-weight: 500;
+  transition: color 0.15s;
+}
+.breadcrumb :deep(.el-breadcrumb__inner:hover) {
+  color: var(--admin-500);
 }
 .breadcrumb :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: #312e81;
-  font-weight: 600;
+  color: var(--admin-700);
+  font-weight: 700;
 }
+
 .header-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
+}
+
+/* Notification button */
+.notify-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-400);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.notify-btn:hover {
+  background: var(--admin-50);
+  color: var(--admin-500);
 }
 .notify-badge {
   cursor: pointer;
 }
-.notify-icon {
-  color: #64748b;
-  transition: color 0.2s;
-}
-.notify-icon:hover {
-  color: #6366f1;
-}
+
+/* User info */
 .user-info {
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 10px;
-  transition: background 0.2s;
+  padding: 6px 14px 6px 6px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 .user-info:hover {
-  background: #f8fafc;
+  background: var(--neutral-50);
 }
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--admin-500), var(--admin-600));
   color: #fff;
   display: flex;
   align-items: center;
@@ -324,59 +422,80 @@ onUnmounted(() => {
 }
 .user-name {
   font-size: 14px;
-  color: #334155;
-  font-weight: 500;
+  color: var(--neutral-700);
+  font-weight: 600;
 }
 .arrow {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--neutral-400);
+  transition: transform 0.2s;
+}
+.user-info:hover .arrow {
+  transform: translateY(2px);
 }
 
+/* ========== Main content ========== */
 .main {
-  padding: 24px;
+  padding: 24px 28px;
   overflow-x: hidden;
-  background: #f1f5f9;
+  background: var(--neutral-50);
   position: relative;
 }
 .main-inner {
   min-height: 0;
 }
 
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all 0.25s ease;
+/* Page transition */
+.page-fade-enter-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
+.page-fade-leave-active {
+  transition: all 0.15s ease;
 }
-.slide-left-leave-to {
+.page-fade-enter-from {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateY(10px);
+}
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
+/* Back to top */
 .back-top {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--admin-500), var(--admin-600));
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 100;
 }
 .back-top:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 8px 28px rgba(99, 102, 241, 0.45);
+}
+.back-top-fade-enter-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.back-top-fade-leave-active {
+  transition: all 0.2s ease;
+}
+.back-top-fade-enter-from,
+.back-top-fade-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .aside {
     position: fixed;
@@ -386,5 +505,65 @@ onUnmounted(() => {
   .user-name {
     display: none;
   }
+  .header {
+    padding: 0 16px;
+  }
+  .main {
+    padding: 16px;
+  }
+}
+</style>
+
+<style>
+/* Notification popover global styles */
+.notify-popover {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 1px solid var(--neutral-100) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+}
+.notify-panel {
+  padding: 0;
+}
+.notify-title {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--neutral-900);
+  border-bottom: 1px solid var(--neutral-100);
+  font-family: 'Noto Serif SC', serif;
+}
+.notify-empty {
+  padding: 36px 20px;
+  text-align: center;
+  color: var(--neutral-400);
+  font-size: 14px;
+}
+.notify-list {
+  padding: 6px;
+}
+.notify-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.notify-item:hover {
+  background: var(--admin-50);
+}
+.notify-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--neutral-700);
+  font-weight: 500;
+}
+.notify-item-left .el-icon {
+  color: var(--admin-400);
 }
 </style>

@@ -27,8 +27,9 @@ public class ViolationController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String studentId,
-            @RequestParam(required = false) String roomNo) {
-        return Result.ok(violationService.page(pageNum, pageSize, studentId, roomNo));
+            @RequestParam(required = false) String roomNo,
+            @RequestParam(required = false) String handleStatus) {
+        return Result.ok(violationService.page(pageNum, pageSize, studentId, roomNo, handleStatus));
     }
 
     /** 管理端：详情 */
@@ -65,9 +66,11 @@ public class ViolationController {
         return Result.ok();
     }
 
-    /** 学生端：查看自己的违规记录 */
+    /** 学生端：查看自己的违规记录（支持按状态筛选：pending/handled） */
     @GetMapping("/my/list")
-    public Result<List<Violation>> myList(@RequestAttribute String username) {
-        return Result.ok(violationService.myList(username));
+    public Result<List<Violation>> myList(
+            @RequestAttribute String username,
+            @RequestParam(required = false) String status) {
+        return Result.ok(violationService.myList(username, status));
     }
 }

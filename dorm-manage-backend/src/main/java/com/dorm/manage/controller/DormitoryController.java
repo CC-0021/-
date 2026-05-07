@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 宿舍管理接口
@@ -20,6 +21,12 @@ import java.util.List;
 public class DormitoryController {
 
     private final DormitoryService dormitoryService;
+
+    /** 管理端：统计数据 */
+    @GetMapping("/admin/stats")
+    public Result<Map<String, Object>> stats() {
+        return Result.ok(dormitoryService.getStats());
+    }
 
     /** 管理端：分页列表 */
     @GetMapping("/admin/page")

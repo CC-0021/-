@@ -59,8 +59,9 @@
       <el-table-column prop="violationTime" label="违规时间" />
       <el-table-column prop="description" label="违规描述" show-overflow-tooltip />
       <el-table-column prop="handleResult" label="处理结果" show-overflow-tooltip />
-      <el-table-column label="操作" width="160" fixed="right">
+      <el-table-column label="操作" width="220" fixed="right">
         <template #default="{ row }">
+          <el-button v-if="!row.handleResult" type="success" link size="small" @click="openHandleDialog(row)">处理</el-button>
           <el-button type="primary" link size="small" @click="openEditDialog(row)">编辑</el-button>
           <el-button type="danger" link size="small" @click="handleDelete(row.id)">删除</el-button>
         </template>
@@ -111,6 +112,27 @@
         <el-button type="primary" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="handleDialogVisible" title="处理违规记录" width="520px">
+      <el-form :model="handleForm" label-width="100px">
+        <el-form-item label="违规学生">
+          <span class="handle-info">{{ handleForm.studentName }} ({{ handleForm.studentId }})</span>
+        </el-form-item>
+        <el-form-item label="违规类型">
+          <span class="handle-info">{{ handleForm.violationType }}</span>
+        </el-form-item>
+        <el-form-item label="违规描述">
+          <span class="handle-info">{{ handleForm.description || '无' }}</span>
+        </el-form-item>
+        <el-form-item label="处理结果" required>
+          <el-input v-model="handleForm.handleResult" type="textarea" :rows="4" placeholder="请输入处理结果" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="handleDialogVisible = false">取消</el-button>
+        <el-button type="primary" :disabled="!handleForm.handleResult" @click="submitHandle">确认处理</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,6 +153,9 @@ const searchForm = reactive({ studentId: '', roomNo: '' })
 const dialogVisible = ref(false)
 const dialogType = ref('add')
 const form = reactive({ id: '', studentId: '', roomNo: '', violationType: '', violationTime: '', description: '', evidence: '', handleResult: '', handlerId: '' })
+
+const handleDialogVisible = ref(false)
+const handleForm = reactive({ id: '', studentId: '', studentName: '', violationType: '', description: '', handleResult: '' })
 
 const pendingCount = computed(() => tableData.value.filter(r => !r.handleResult).length)
 const handledCount = computed(() => tableData.value.filter(r => r.handleResult).length)
@@ -155,6 +180,24 @@ const openAddDialog = () => {
 
 const openEditDialog = (row) => { dialogType.value = 'edit'; Object.assign(form, row); dialogVisible.value = true }
 
+const openHandleDialog = (row) => {
+  Object.assign(handleForm, {
+    id: row.id,
+    studentId: row.studentId,
+    studentName: row.studentName,
+    violationType: row.violationType,
+    description: row.description,
+    handleResult: ''
+  })
+  handleDialogVisible.value = true
+}
+
+const submitHandle = () => {
+  if (!handleForm.handleResult) return
+  violationApi.update({ id: handleForm.id, handleResult: handleForm.handleResult })
+    .then(() => { handleDialogVisible.value = false; getList(); ElMessage.success('处理完成') })
+}
+
 const handleSubmit = () => {
   const action = dialogType.value === 'add' ? violationApi.add(form) : violationApi.update(form)
   action.then(() => { dialogVisible.value = false; getList(); ElMessage.success(dialogType.value === 'add' ? '新增成功' : '编辑成功') })
@@ -172,3 +215,10 @@ const handleBatchDelete = () => {
 
 onMounted(() => { getList() })
 </script>
+
+<style scoped>
+.handle-info {
+  color: #334155;
+  font-size: 14px;
+}
+</style>

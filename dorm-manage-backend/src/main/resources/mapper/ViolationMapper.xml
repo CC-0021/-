@@ -32,6 +32,8 @@
         <where>
             <if test="studentId != null and studentId != ''">AND v.student_id = #{studentId}</if>
             <if test="roomNo != null and roomNo != ''">AND v.room_no = #{roomNo}</if>
+            <if test="handleStatus == 'pending'">AND (v.handle_result IS NULL OR v.handle_result = '')</if>
+            <if test="handleStatus == 'handled'">AND v.handle_result IS NOT NULL AND v.handle_result != ''</if>
         </where>
         ORDER BY v.violation_time DESC
         LIMIT #{offset}, #{limit}
@@ -41,6 +43,8 @@
         <where>
             <if test="studentId != null and studentId != ''">AND v.student_id = #{studentId}</if>
             <if test="roomNo != null and roomNo != ''">AND v.room_no = #{roomNo}</if>
+            <if test="handleStatus == 'pending'">AND (v.handle_result IS NULL OR v.handle_result = '')</if>
+            <if test="handleStatus == 'handled'">AND v.handle_result IS NOT NULL AND v.handle_result != ''</if>
         </where>
     </select>
     <select id="selectByStudentId" resultMap="BaseResultMap">

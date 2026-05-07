@@ -20,10 +20,13 @@ public interface ViolationMapper {
 
     List<Violation> selectPage(@Param("studentId") String studentId,
                                @Param("roomNo") String roomNo,
+                               @Param("handleStatus") String handleStatus,
                                @Param("offset") long offset,
                                @Param("limit") int limit);
 
-    long countPage(@Param("studentId") String studentId, @Param("roomNo") String roomNo);
+    long countPage(@Param("studentId") String studentId,
+                   @Param("roomNo") String roomNo,
+                   @Param("handleStatus") String handleStatus);
 
     List<Violation> selectByStudentId(@Param("studentId") String studentId);
 

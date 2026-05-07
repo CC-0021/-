@@ -14,6 +14,6 @@ export default {
   delete: (id) => request.delete(`/violation/admin/delete/${id}`),
   // 批量删除
   batchDelete: (ids) => request.delete('/violation/admin/batch-delete', { data: ids }),
-  // 学生端：我的违规记录
-  myList: () => request.get('/violation/my/list')
+  // 学生端：我的违规记录（status: all/pending/handled）
+  myList: (status) => request.get('/violation/my/list', { params: status ? { status } : {} })
 }

@@ -30,5 +30,7 @@ public interface DormitoryMapper {
 
     int updateById(Dormitory dormitory);
 
+    int countAvailableBeds();
+
     int deleteById(Long id);
 }

@@ -1,19 +1,26 @@
 <template>
   <div class="student-portal">
+    <!-- Top bar -->
     <header class="portal-topbar">
       <div class="topbar-inner">
         <div class="brand">
-          <span class="brand-icon">
-            <el-icon :size="24"><School /></el-icon>
-          </span>
+          <div class="brand-mark">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="8" width="24" height="20" rx="4" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+              <path d="M4 13L16 5L28 13" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="12" y="18" width="8" height="10" rx="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="1"/>
+            </svg>
+          </div>
           <span class="brand-text">学生公寓服务</span>
         </div>
         <div class="topbar-right">
-          <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0" class="notify-badge">
-            <el-icon :size="22" class="notify-icon"><Bell /></el-icon>
+          <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0">
+            <div class="notify-btn">
+              <el-icon :size="20"><Bell /></el-icon>
+            </div>
           </el-badge>
           <span class="welcome-text">你好，{{ userStore.displayName }}</span>
-          <el-dropdown trigger="click" @command="handleCommand" class="user-dropdown">
+          <el-dropdown trigger="click" @command="handleCommand">
             <div class="avatar-btn">
               <el-icon :size="20"><User /></el-icon>
             </div>
@@ -30,6 +37,7 @@
       </div>
     </header>
 
+    <!-- Body: sidebar + main -->
     <div class="portal-body">
       <aside class="portal-sidebar">
         <nav class="nav-menu">
@@ -40,7 +48,9 @@
             class="nav-item"
             :class="{ active: activeMenu === item.path }"
           >
-            <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
+            <span class="nav-icon-wrap">
+              <el-icon class="nav-icon"><component :is="item.icon" /></el-icon>
+            </span>
             <span class="nav-label">{{ item.label }}</span>
           </router-link>
         </nav>
@@ -56,7 +66,7 @@
         </div>
         <div class="main-content">
           <router-view v-slot="{ Component }">
-            <transition name="slide-left" mode="out-in">
+            <transition name="page-fade" mode="out-in">
               <component :is="Component" />
             </transition>
           </router-view>
@@ -64,20 +74,24 @@
       </main>
     </div>
 
-    <div class="back-top" v-show="showBackTop" @click="scrollToTop">
-      <el-icon :size="18"><Top /></el-icon>
-    </div>
+    <transition name="back-top-fade">
+      <div class="back-top" v-show="showBackTop" @click="scrollToTop">
+        <el-icon :size="18"><Top /></el-icon>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ElMessageBox } from 'element-plus'
 import {
   School, Notification, Tools, Plus, Calendar, ChatDotRound,
   Document, User, SwitchButton, Warning, House, Bell, Top, HomeFilled
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import violationApi from '@/api/violation'
 
 const route = useRoute()
 const router = useRouter()
@@ -90,12 +104,12 @@ const pageTitle = computed(() => route.meta.title || '首页')
 
 const menuItems = [
   { path: '/home', label: '首页', icon: HomeFilled },
-  { path: '/announcement', label: '公告', icon: Notification },
+  { path: '/announcement', label: '公告通知', icon: Notification },
   { path: '/repair', label: '报修记录', icon: Tools },
   { path: '/repair/submit', label: '提交报修', icon: Plus },
   { path: '/checkin', label: '入住登记', icon: Calendar },
   { path: '/my-dormitory', label: '我的宿舍', icon: House },
-  { path: '/message', label: '留言', icon: ChatDotRound },
+  { path: '/message', label: '留言反馈', icon: ChatDotRound },
   { path: '/dorm-application', label: '宿舍申请', icon: Document },
   { path: '/violation', label: '违规记录', icon: Warning }
 ]
@@ -108,15 +122,41 @@ function handleCommand(cmd) {
 }
 
 function handleScroll() {
-  showBackTop.value = window.scrollY > 200
+  showBackTop.value = window.scrollY > 300
 }
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+async function checkPendingViolations() {
+  try {
+    const res = await violationApi.myList('pending')
+    const pendingList = res.data || []
+    if (pendingList.length > 0) {
+      const detail = pendingList.slice(0, 3).map(v =>
+        `<p style="margin:6px 0;color:var(--neutral-500);">· ${v.violationType} — ${v.violationTime || ''}</p>`
+      ).join('')
+      const more = pendingList.length > 3 ? `<p style="margin:6px 0;color:var(--neutral-400);">...还有 ${pendingList.length - 3} 条</p>` : ''
+      ElMessageBox.alert(
+        `<div style="text-align:left;"><p style="font-size:16px;color:var(--neutral-900);margin:0 0 12px;">您有 <b style="color:var(--student-600);">${pendingList.length}</b> 条待处理的违规记录！</p>${detail}${more}</div>`,
+        '违规提醒',
+        {
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: '查看详情',
+          type: 'warning',
+          center: true
+        }
+      ).then(() => {
+        router.push('/violation')
+      }).catch(() => {})
+    }
+  } catch (e) {}
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  checkPendingViolations()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -126,18 +166,19 @@ onUnmounted(() => {
 <style scoped>
 .student-portal {
   min-height: 100vh;
-  background: #fafaf9;
-  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  background: #faf8f5;
+  font-family: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
 }
 
+/* ========== Top bar ========== */
 .portal-topbar {
-  background: #fff;
-  border-bottom: 1px solid #f0efed;
+  background: linear-gradient(135deg, #f97316, #ea580c, #c2410c);
   padding: 0 48px;
-  height: 68px;
+  height: 64px;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 2px 16px rgba(249, 115, 22, 0.2);
 }
 .topbar-inner {
   max-width: 100%;
@@ -152,126 +193,147 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
 }
-.brand-icon {
-  width: 42px;
-  height: 42px;
+.brand-mark {
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #fff;
-  display: inline-flex;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
   align-items: center;
   justify-content: center;
 }
+.brand-mark svg {
+  width: 22px;
+  height: 22px;
+}
 .brand-text {
-  font-size: 22px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 20px;
   font-weight: 700;
-  color: #1c1917;
-  letter-spacing: 0.5px;
+  color: #ffffff;
+  letter-spacing: 0.03em;
 }
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
-.notify-badge {
-  cursor: pointer;
-}
-.notify-icon {
-  color: #78716c;
-  transition: color 0.2s;
-}
-.notify-icon:hover {
-  color: #f97316;
-}
-.welcome-text {
-  font-size: 15px;
-  color: #78716c;
-}
-.avatar-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #fafaf9;
-  border: 2px solid #f0efed;
+.notify-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #78716c;
+  color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+.notify-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.welcome-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+.avatar-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 .avatar-btn:hover {
-  border-color: #f97316;
-  color: #f97316;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
 }
 
+/* ========== Body ========== */
 .portal-body {
   display: flex;
   max-width: 100%;
   margin: 0 auto;
-  padding: 32px 48px;
+  padding: 36px 48px;
   gap: 36px;
-  min-height: calc(100vh - 68px);
+  min-height: calc(100vh - 64px);
 }
 
+/* ========== Sidebar ========== */
 .portal-sidebar {
-  width: 260px;
+  width: 240px;
   flex-shrink: 0;
 }
 .nav-menu {
-  background: #fff;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0efed;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04);
+  border: 1px solid var(--neutral-200);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   position: sticky;
-  top: 100px;
+  top: 104px;
 }
 .nav-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 18px;
+  padding: 13px 18px;
   border-radius: 12px;
-  color: #78716c;
+  color: var(--neutral-500);
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   position: relative;
 }
-.nav-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  border-radius: 0 3px 3px 0;
-  background: #f97316;
-  transition: height 0.2s ease;
-}
-.nav-item:hover {
-  background: #fff7ed;
-  color: #f97316;
-}
-.nav-item.active {
-  background: #fff7ed;
-  color: #ea580c;
-  font-weight: 600;
-}
-.nav-item.active::before {
-  height: 20px;
+.nav-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: all 0.25s ease;
 }
 .nav-icon {
-  font-size: 22px;
+  font-size: 20px;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.nav-item:hover {
+  background: var(--student-50);
+  color: var(--student-600);
+}
+.nav-item:hover .nav-icon-wrap {
+  background: rgba(249, 115, 22, 0.08);
+}
+.nav-item.active {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  color: var(--student-700);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--student-500);
+}
+.nav-item.active .nav-icon-wrap {
+  background: rgba(249, 115, 22, 0.12);
+}
+.nav-item.active .nav-icon {
+  color: var(--student-500);
 }
 
+/* ========== Main ========== */
 .portal-main {
   flex: 1;
   min-width: 0;
@@ -287,64 +349,87 @@ onUnmounted(() => {
 }
 .page-name {
   margin: 0;
+  font-family: 'Noto Serif SC', serif;
   font-size: 28px;
   font-weight: 700;
-  color: #1c1917;
-  letter-spacing: -0.02em;
+  color: var(--neutral-900);
+  letter-spacing: -0.01em;
 }
 .page-breadcrumb {
   font-size: 14px;
 }
 .page-breadcrumb :deep(.el-breadcrumb__inner) {
-  color: #a8a29e;
+  color: var(--neutral-400);
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.page-breadcrumb :deep(.el-breadcrumb__inner:hover) {
+  color: var(--student-500);
 }
 .page-breadcrumb :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: #ea580c;
+  color: var(--student-600);
+  font-weight: 700;
 }
 .main-content {
   flex: 1;
   overflow-x: hidden;
 }
 
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all 0.25s ease;
+/* Page transition */
+.page-fade-enter-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
+.page-fade-leave-active {
+  transition: all 0.15s ease;
 }
-.slide-left-leave-to {
+.page-fade-enter-from {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateY(10px);
+}
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
+/* ========== Back to top ========== */
 .back-top {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, var(--student-500), var(--student-600));
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 100;
 }
 .back-top:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.45);
+  box-shadow: 0 8px 28px rgba(249, 115, 22, 0.4);
+}
+.back-top-fade-enter-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.back-top-fade-leave-active {
+  transition: all 0.2s ease;
+}
+.back-top-fade-enter-from,
+.back-top-fade-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .portal-body {
     flex-direction: column;
-    padding: 16px;
+    padding: 20px 16px;
   }
   .portal-sidebar {
     width: 100%;
@@ -353,30 +438,41 @@ onUnmounted(() => {
     flex-direction: row;
     overflow-x: auto;
     position: static;
-    padding: 10px;
-    gap: 6px;
-    border-radius: 14px;
+    padding: 8px;
+    gap: 4px;
+    border-radius: 16px;
   }
   .nav-item {
     flex-direction: column;
-    padding: 10px 14px;
-    font-size: 13px;
-    gap: 5px;
+    padding: 10px 12px;
+    font-size: 12px;
+    gap: 4px;
+    border-radius: 10px;
   }
-  .nav-item::before {
-    display: none;
+  .nav-item.active {
+    box-shadow: none;
+    border-bottom: 2px solid var(--student-500);
+  }
+  .nav-icon-wrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
   }
   .nav-icon {
-    font-size: 18px;
+    font-size: 16px;
   }
   .nav-label {
-    font-size: 12px;
+    font-size: 11px;
   }
   .welcome-text {
     display: none;
   }
   .portal-topbar {
     padding: 0 20px;
+    height: 56px;
+  }
+  .brand-text {
+    font-size: 17px;
   }
 }
 </style>
