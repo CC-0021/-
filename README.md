@@ -1,4 +1,4 @@
-# 大学生公寓管理系统
+# 公寓管理系统
 
 前后端分离架构：Vue2 + ElementUI 前端，SpringBoot + MyBatis + Redis + JWT 后端。
 
